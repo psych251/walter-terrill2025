@@ -32,9 +32,9 @@ This replication would require recruiting 600 participants from the Prolific pla
 
 4) COI disclosure: In the interest of transparency, I disclose that I occasionally work as an independent contractor for the National Academies of Sciences, the publisher of PNAS, where the original paper was published. Last year I was assigned to write a brief summary of this paper for the journal. However, I had no role in selecting this paper to cover nor relationships to the authors. My work for NAS/PNAS has no bearing on the journal's editorial decisions as research summaries are assigned only after acceptance.
 
-Repository: https://github.com/psych251/walter-terrill2025
+[Repository](https://github.com/psych251/walter-terrill2025)
 
-Original paper: https://github.com/psych251/walter-terrill2025/blob/main/original_paper/walter-terrill-et-al-2025.pdf
+[Original paper](https://github.com/psych251/walter-terrill2025/blob/main/original_paper/walter-terrill-et-al-2025.pdf)
 
 ## Methods
 
