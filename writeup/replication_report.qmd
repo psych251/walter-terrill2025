@@ -12,9 +12,25 @@ format:
 
 ## Introduction
 
-Human interpersonal communication is increasingly mediated by videoconferencing technology. Walter-Terrillet et al. found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical evidence for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself.
+Human interpersonal communication is increasingly mediated by videoconferencing technology. Walter-Terrillet et al. found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical support for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself.
 
-I propose to replicate this experiment for the following reasons: 
+I chose to replicate this experiment for the following reasons:
+
+1)  High likelihood of replication: The authors provide detailed descriptions of their experimental procedures, all audio stimuli, and raw data. They also preregistered all of their experiments and conducted several (successful) internal replications of their results. This raises the bar for calling the original result into question. A successful independent replication would therefore add to the robustness of the result. A failure would likely indicate an error in my own replication attempt or, less likely, a serious problem with the original result.
+
+2)  Theory testing: Media ecology is a broad theoretical framework that is rarely tested experimentally. This experiment provides a direct test of whether the medium really is the message.
+
+3)  Practical implications: Microphone quality represents a relatively simple target for intervention that could increase a family's socioeconomic status if it is indeed critical in hiring decisions. The increasingly popularity of podcasts as news sources could also affect how listeners judge the quality of information presented, regardless of the content.
+
+This replication would require recruiting 600 participants from the Prolific platform and randomly assigning them to the clear or distorted audio conditions (300 in each group). The two audio stimuli (~30 seconds each) are included in the paper's Supplementary Information. After listening to the audio statement, participants would rate how likely they would be to hire the candidate on a continuous scale from 0 to 100. Finally, they would be asked to transcribe the statement to confirm its comprehensibility. I anticipate several challenges in conducting this experiment:
+
+1) Cost: The large sample size may be prohibitive depending on Prolific's pricing model and availability of research funding.
+
+2) Apparatus and data cleaning: The authors used custom webpages built from jsPsych libraries and a custom matching algorithm to assess the accuracy of the transcriptions. If they are not able or willing to provide these materials, they would need be recreated. Imperfect transcripts were manually checked by two coders, adding time, effort, and complexity to the procedure.
+
+3) IRB protocol: I would need to confirm that the PSYCH 251 class protocol covers this specific experiment.
+
+4) COI disclosure: In the interest of transparency, I disclose that I occasionally work as an independent contractor for the National Academies of Sciences, the publisher of PNAS, where the original paper was published. Last year I was assigned to write a brief summary of this paper for the journal. However, I had no role in selecting this paper to cover nor relationships to the authors. My work for NAS/PNAS has no bearing on the journal's editorial decisions as research summaries are assigned only after acceptance.
 
 ## Methods
 
