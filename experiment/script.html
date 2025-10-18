@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My experiment</title>
+    <script src="https://unpkg.com/jspsych@8.2.2"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-html-keyboard-response@2.1.0"></script>
+    <script src="https://unpkg.com/@jspsych/plugin-audio-slider-response@2.1.0"></script>
+    <link href="https://unpkg.com/jspsych@8.2.2/css/jspsych.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body></body>
+  <script>
+
+    var jsPsych = initJsPsych();
+
+    var timeline = [];
+
+    var welcome = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: "Welcome to the experiment. Press any key to begin."
+    };
+    timeline.push(welcome);
+
+    var instructions = {
+      type: jsPsychHtmlKeyboardResponse,
+      stimulus: `
+      <p> The instructions for the experiment will ultimately go here. <br>
+        For now, this will just be used as a placeholder.
+      `
+    };
+    timeline.push(instructions);
+
+    var trial = {
+      type: jsPsychAudioSliderResponse,
+      stimulus: 'audio/clear.mp3',
+      labels: ['Unlikely', 'Very likely'],
+      prompt: '<p>How likely are you to hire this person?</p>'
+    };
+    timeline.push(trial);
+
+    jsPsych.run([timeline]);
+  </script>
+</html>
