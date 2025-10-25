@@ -1,0 +1,275 @@
+<!--
+
+Robert Walter
+
+Pre-registered auditory fluency 
+    computer hire
+
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <title>Objects</title>
+
+   <!--general -se scripts - defualt -->
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   <script src="jspsych-6/jspsych.js"></script>
+
+   <script src="jspsych-6/plugins/jspsych-image-keyboard-response.js"></script>
+   <script src="jspsych-6/plugins/jspsych-video-keyboard-response.js"></script>
+   <script src="jspsych-6/plugins/jspsych-survey-html-form.js"></script>
+   <script src="jspsych-6/plugins/jspsych-survey-multi-select.js"></script>
+   <script src="jspsych-6/plugins/jspsych-survey-likert.js"></script>
+   <script src="jspsych-6/plugins/jspsych-preload.js"></script>
+   <script src="jspsych-6/plugins/jspsych-external-html.js"></script>
+   <script src="jspsych-6/plugins/jspsych-survey-text.js"></script>
+
+   <link href="jspsych-6/css/jspsych.css" rel="stylesheet" type="text/css">
+
+
+
+   <!-- general use scripts - custom -->
+   <script src="custom-js/general/rw-html-slider-response.js"></script>
+   <script src="custom-js/general/rw-core-functions-2-25-2021.js"></script>
+   <script src="custom-js/general/rw-instructions.js"></script>
+   <script src="custom-js/general/rw-fullscreen.js"></script>
+   <script src="custom-js/general/rw-html-keyboard-response.js"></script>
+   <script src="custom-js/general/rw-html-button-response.js"></script>
+
+
+    <!--general use scripts - custom -->
+   <script src="custom-js/specific/rw-fluency_functions.js"></script>
+   <script src="custom-js/specific/rw-audio_response.js"></script>
+
+
+</head>
+
+
+<body style="background-color:lightgray;">
+   <script>
+      subj_name = subj_name + "_comp_hire"
+      var save_folder = "data/comp_hire/"
+      var distorted_audio = (getRandomIntInclusive(0, 1) == 1)
+      if (distorted_audio) {
+         var statement_audio = "sound_files/matthew_sales_short_distort4.mp3"
+      } else {
+         var statement_audio = "sound_files/matthew_sales_short.mp3"
+      }
+
+
+      var preload_audio = [statement_audio, audio_test]
+      var preload_images = []
+      var preload_video = []
+      var preload_progress_bar = false;
+
+      var pointer_lock = false;
+
+      var redirect_html = "https://app.prolific.co/submissions/complete?cc=83CE9529"
+      var debug = false; // short experiment with extra info
+
+
+      var do_instructions = true;
+      var do_consent = true;
+      var do_audio_check = true;
+
+
+      var exp_time = "3 minutes";
+      var exp_compensation = "$0.40";
+      var web_link = "http://perceptionexperiments.net/RW/PD_calibration/Calibration_pilot_v2.html"
+
+      var cursor_size = [10, 15]
+
+      var next_delay = 8000; // delay in ms for each instruction screen
+      var audio_check_pass = false;
+      var exit_expeirment_text =
+         "Oops, you selected the incorrect answer.  Because this experiment requires you being able to listen to audio, and you didn't make the response given by the audio, you won't be able to complete this experiment.  <br><b>  Please return to Prolific and click 'stop without completing.''</b> <br><br>  If you have any questions or concerns, please contact the study author at robert.walter@yale.edu.  <br><br>You can close this window."
+
+         var debreif = {
+            type: 'survey-html-form',
+            data: {
+               trial_part: 'debrief',
+            },
+
+            html: '<p>Finally, we just have a couple questions for you!<br>Please note that you must answer <strong>ALL</strong> the questions before clicking "continue." ' +
+               "<div style='width: 80%; text-align: left; margin: 0 auto'>" +
+               '<p>Age: <br><input name="age" required type="number"  max="100" min="18" style="width: 80px; border-radius: 4px; padding: 10px 10px; margin: 8px 0; border: 1px solid #ccc; font-size: 15px" required>' +
+               '<p>Please select your gender:<br><input type="radio" required id="male" name="gender" value="male"><label for="male">Male</label><br><input type="radio" id="female" name="gender" value="female"><label for="female">Female</label><br><input type="radio" id="other" name="gender" value="other"><label for="other">Other</label><br><input type="radio" id="not_say" name="gender" value="Prefer not to say"><label for="not_say">Prefer not to say</label>' +
+               '<p>How are you listening to the audio from experiment?<br><input type="radio" required id="Headphones" name="audio_output" value="Headphones"><label for="Headphones">Headphones</label><br><input type="radio" id="Laptop Speakers" name="audio_output" value="Laptop Speakers"><label for="Laptop Speakers">Laptop Speakers</label><br><input type="radio" id="External Speakers" name="audio_output" value="External Speakers"><label for="External Speakers">External Speakers</label><br><input type="radio" id="Earbuds" name="audio_output" value="Earbuds"><label for="Earbuds">Earbuds</label><br><input type="radio" id="Other" name="audio_output" value="Other"><label for="Other">Other</label>' +
+               '<p>In 1-2 sentences, what do you think this experiment was testing? <br><input name="testing" type="text" size="50" style="width: 100%; border-radius: 4px; padding: 10px 10px; margin: 8px 0; border: 1px solid #ccc; font-size: 15px" required>' +
+               '<p>Did you experience any technical difficulties in playing the audio or did anything distract you while you were listening to the audio?  If so please describe. (This will not affect whether you receive credit or compensation.) <br><input name="audio_problems" type="text" size="50" style="width: 100%; border-radius: 4px; padding: 10px 10px; margin: 8px 0; border: 1px solid #ccc; font-size: 15px" required>' +
+               '<p>Using the slider below, on a scale of 1-100 (with 1 being very distracted, and 100 being very focused), how well did you pay attention to the experiment?  (This will not affect whether you receive credit or compensation.) <br> <p style="text-align:left;">Very Distracted <span style="float:right;">Very Focused</span></p> <input type="range" value="50" min="1" max="100" name = "attention" class="slider" required oninput="this.nextElementSibling.value = this.value"> <output id = "attntion_out"  style="text-align:center; font-size: 1.6vw">_</output> </p>' +
+               "</div>",
+            required_names: ["attntion_out"],
+            // <br><output>24</output>
+            // oninput= function myfunction1(){console.log("test")}
+            on_start: function(debreif) {},
+            on_finish: function(data) {
+               var debrief_responses = JSON.parse(data.responses)
+
+               data.age = debrief_responses.age
+               data.gender = debrief_responses.gender
+               data.audio_output = debrief_responses.audio_output
+               data.audio_problems = debrief_responses.audio_problems;
+               data.testing = debrief_responses.testing
+               data.other = debrief_responses.other
+               data.attention = debrief_responses.attention
+               data.block_data = true;
+
+            }
+         }
+
+         var debreif2 = {
+            type: 'survey-html-form',
+            data: {
+               trial_part: 'debrief2',
+            },
+
+            html: '<p>A few last questions ...<br>Please note that you must answer <strong>ALL</strong> the questions before clicking "continue." ' +
+               "<div style='width: 80%; text-align: left; margin: 0 auto'>" +
+                 '<p>Have you ever been employed in a possition where you made hiring decisions? <br><input type="radio" required id="Yes_hire" name="hire_exp" value="Yes"><label for="Yes_hire">Yes</label><br><input type="radio" id="No_hire" name="hire_exp" value="No"><label for="No_hire">No</label>'+
+               '<p>Using the slider below, on a scale of 1-100, how would you rate the recording quality of the audio clip you just heard?  (With 1 being very poor, and 100 being excellent.) <br> <p style="text-align:left;">Very Poor <span style="float:right;">Excellent</span></p> <input type="range" value="50" min="1" max="100" name = "audio_quality" required class="slider" oninput="this.nextElementSibling.value = this.value"> <output id="audio_quality_out" style="text-align:center; font-size: 1.6vw">_</output> ' +
+               '<p>Using the slider below, on a scale of 1-100, how well were you able to understand the words spoken in the audio clip you heard -- setting aside any possible issues with the recording quality?  (With 0 being you understood none of the words, 50 being you understood about half of the words, and 100 being you understood all the words.) <br><p style="text-align:left;">No Understanding <span style="float:right;">Complete Understanding</span></p> <input type="range" value="50" min="1" max="100" name = "understandable" required class="slider" oninput="this.nextElementSibling.value = this.value"> <output id = "understandable_out" style="text-align:center; font-size: 1.6vw">_</output> ' +
+               '<p>Is there anything else we should know (either about you or how you did the experiment) that may have had an impact on your results? <br><input name="other" type="text" size="50" style="width: 100%; border-radius: 4px; padding: 10px 10px; margin: 8px 0; border: 1px solid #ccc; font-size: 15px" required></p>' +
+
+               "</div>",
+            required_names: ["audio_quality_out", "understandable_out"],
+            on_start: function(debreif) {},
+            on_finish: function(data) {
+               var debrief_responses = JSON.parse(data.responses)
+               data.audio_quality = debrief_responses.audio_quality
+               data.understandable = debrief_responses.understandable
+               data.other = debrief_responses.other
+               data.hire_exp = debrief_responses.hire_exp
+            }
+         }
+
+         var data_collection = {
+            type: 'html-keyboard-response',
+            stimulus: "",
+            choices: jsPsych.NO_KEYS,
+            trial_duration: 50,
+            on_finish: function(data){
+              data.distorted_audio = distorted_audio
+              data.sound_file = statement_audio
+               data.hire = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "hire"}).values()[0].response
+               data.response_rt = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "hire"}).values()[0].rt
+               data.hire_values = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "hire"}).values()[0].selection_values
+               data.hire_rts =jsPsych.data.get().filter({trial_part: 'follow_ups', question: "hire"}).values()[0].selection_rts
+
+
+               data.debrief_age = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].age
+               data.debrief_gender = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].gender
+               data.debrief_audio_output = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].audio_output
+               data.debrief_audio_problems = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].audio_problems
+               data.debrief_testing = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].testing
+               data.debrief_other = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].other
+               data.debrief_attention = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].attention
+               data.debrief_audio_quality = jsPsych.data.get().filter({trial_part: 'debrief2'}).values()[0].audio_quality
+               data.debrief_understandable = jsPsych.data.get().filter({trial_part: 'debrief2'}).values()[0].understandable
+               data.debrief_other = jsPsych.data.get().filter({trial_part: 'debrief2'}).values()[0].other
+               data.debrief_hire_exp = jsPsych.data.get().filter({trial_part: 'debrief2'}).values()[0].hire_exp
+               data.data_summary = true;
+
+            }
+          }
+
+      var instruct1 =`For this study, we'd like you to imagine that as part of your job, you are tasked with making a hiring decision for a highly competitive position: senior sales manager. You will listen to a few lines from a personal statement from an application for this position.  We will then ask you a few questions about your impressions of the personal statement and its author.`
+
+      var instruct_pages_1 = [instruct1];
+
+
+      var audio_question = function(audio_file) {  
+         var q_a = {
+            type: 'audio_response',
+            audio_name: audio_file,
+            continue_disabled: true,
+            play_controls: false,
+            on_start: function(q_a){
+              q_a.audio_prompt= "Click on the 'Play' button below to play the audio clip of the personal statement. <br>  <b>You will only be able to listen to this once. (You cannot replay it.) </b>"
+            },
+            on_finish: function(data) {
+           }
+
+         }
+
+         return q_a;
+      }
+
+
+      var follow_ups = {
+         timeline: [{
+            type: 'html-slider-response',
+            stimulus: jsPsych.timelineVariable('question'),
+            labels: jsPsych.timelineVariable('test'),
+            data: {
+               question: jsPsych.timelineVariable('question_name'),
+               trial_part: "follow_ups"
+            },
+            require_movement: true,
+            slider_width: function() {
+               return w * .75
+            }
+
+         }],
+         timeline_variables: [{
+           question: '<p>Based on the personal statement you just heard, please answer the following question using the slider below. .<br>(You can click on the appropriate part of the white bar, or drag the blue circle to the appropriate place.) <br><br><b>What is the likelihood that you would hire this person?</b></p><br>',
+           test: ['Very Unlikely', 'Very Likely'],
+           question_name: "hire"
+            }
+
+         ],
+         randomize_order: true,
+
+      }
+
+
+      /******** make timeline ********/
+
+      timeline.push(preload_media)
+
+      timeline.push(check_device)
+
+      timeline.push(consent)
+
+   if (do_audio_check) {
+      timeline.push(instructions(audio_instruct, [6000,6000]))
+      timeline.push(audio_check)
+      timeline.push(pass_fail)
+   }
+      timeline.push(enter_fullscreen)
+
+   timeline.push(instructions(instruct_pages_1, [6000]));
+   timeline.push(audio_question(statement_audio))
+   timeline.push(follow_ups)
+
+   timeline.push(debreif);
+   timeline.push(debreif2)
+   timeline.push(data_collection)
+   timeline.push(save_data)
+   timeline.push(thank_you);
+   timeline.push(exit_fullscreen)
+   timeline.push(final)
+
+
+
+      /******** RUN TRIAL ********/
+      var start_clock = Date.now();
+      jsPsych.init({
+         timeline: timeline,
+         preload_images: total_img_list,
+         on_finish: function() {
+            var end_clock = Date.now();
+            var total_time = end_clock - start_clock;
+         }
+      });
+   </script>
+</body>
+
+</html>
