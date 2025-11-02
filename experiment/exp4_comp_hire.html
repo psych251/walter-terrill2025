@@ -55,7 +55,7 @@ Pre-registered auditory fluency
 <body style="background-color:lightgray;">
    <script>
       subj_name = subj_name + "_comp_hire"
-      var save_folder = "data/exp4_comp_hire/"
+      var save_folder = "data/comp_hire/"
       var distorted_audio = (getRandomIntInclusive(0, 1) == 1)
       if (distorted_audio) {
          var statement_audio = "sound_files/matthew_sales_short_distort4.mp3"
@@ -252,7 +252,7 @@ Pre-registered auditory fluency
    timeline.push(debreif);
    timeline.push(debreif2)
    timeline.push(data_collection)
-   timeline.push(save_data)
+   timeline.push(save_data);
    timeline.push(thank_you);
    timeline.push(exit_fullscreen)
    timeline.push(final)
@@ -261,10 +261,11 @@ Pre-registered auditory fluency
 
       /******** RUN TRIAL ********/
       var start_clock = Date.now();
+      
       jsPsych.init({
          timeline: timeline,
          preload_images: total_img_list,
-         on_finish: function() {
+         on_finish: function(data) {
             var end_clock = Date.now();
             var total_time = end_clock - start_clock;
          }

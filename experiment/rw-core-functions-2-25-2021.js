@@ -22,15 +22,39 @@ var save_data = {
   type: 'html-keyboard-response',
   stimulus: "Saving data ... One moment please...",
   choices: jsPsych.NO_KEYS,
-  trial_duration: 2000,
+  trial_duration: 3000,
   on_start: function(save_data) {
-    saveData(subj_name + "_summary", jsPsych.data.get().filter({
-      data_summary: true
-    }).csv(), save_folder)
+    // Save summary data to Google Sheets
+    var summaryData = jsPsych.data.get().filter({data_summary: true}).values()[0];
+    summaryData.participant_id = subj_name + "_summary";
+    saveToGoogleSheets(summaryData);
   },
   on_finish: function(data) {
-    saveData(subj_name + "_all_data", jsPsych.data.get().csv(), save_folder);
+    // Save all data to Google Sheets
+    var allData = jsPsych.data.get().csv();
+    saveToGoogleSheets({
+      participant_id: subj_name + "_all_data",
+      csv_data: allData
+    });
   }
+}
+
+// New function to save to Google Sheets
+function saveToGoogleSheets(data) {
+  var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0PpeCH7RYM0d9lyHPYhnmSuDEG1cfqkDaJtyVjM4atGtyAJOBvqGX42W0raQJtbkU/exec';
+  
+  fetch(GOOGLE_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data)
+  }).then(function() {
+    console.log('Data saved to Google Sheets');
+  }).catch(function(error) {
+    console.error('Error saving data:', error);
+  });
 }
 
 
