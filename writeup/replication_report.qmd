@@ -8,9 +8,11 @@ format:
     toc_depth: 3
 ---
 ```{r load libraries}
-library("pwr")    # for power analyses
-library("tidyverse")
+library("pwr")           # for power analyses
+library("tidyverse")    
 library("knitr")
+library("here")
+library("ggbeeswarm")
 ```
 
 <!-- Replication reports should all use this template to standardize reporting across projects.  These reports will be public supplementary materials that accompany the summary report(s) of the aggregate results. -->
@@ -126,10 +128,15 @@ Data preparation following the analysis plan.
 #### Load Relevant Libraries and Functions
 
 #### Import data
+pilot_A <- read_csv(here("data", "exp4_data_pilot_A.csv"))
 
 #### Data exclusion / filtering
 
 #### Prepare data for analysis - create columns etc.
+pilot_A = pilot_A %>%
+  filter(data_summary == TRUE) %>% 
+  select(-c(rt, key_press, stimulus, trial_type, trial_index)) %>% 
+  relocate(subject)
 ```
 
 ### Confirmatory analysis
@@ -137,6 +144,28 @@ Data preparation following the analysis plan.
 The analyses as specified in the analysis plan.
 
 *Side-by-side graph with original graph is ideal here*
+
+```{r}
+# insert figure from original paper
+include_graphics(here("writeup","replication_report_files", "walter-terrill2025_fig1_d.png"))
+
+# plot of pilot A data
+ggplot(data = pilot_A,
+       mapping = aes(x = distorted_audio,
+                     y = hire,
+                     color = distorted_audio)) +
+  geom_beeswarm(cex = 10) +
+  stat_summary(fun = mean,
+               geom = "crossbar",
+               width = 0.5,
+               color = "black") +
+  scale_x_discrete(labels = c("FALSE" = "Clear", "TRUE" = "Distorted")) +
+  labs(title = "Hireability judgments (Computer male)",
+       x = "Simulated audio quality",
+       y = "Rating") +
+  theme_classic()
+```
+
 
 ### Exploratory analyses
 
