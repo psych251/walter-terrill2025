@@ -108,7 +108,7 @@ var check_device = {
   on_start: function(check_device) {
     if (isAndroid || isiPad || isiPhone || isMobile || isTablet) {
       check_device.stimulus =
-        `Oops, it looks like you are on a tablet, phone or other mobile device.  This experiment can only be run from a computer or laptop.  Please return to Prolific and click "stop withotu completing."   If you feel like this message is in error, you can contact the study author at robert.walter@yale.edu.<br><br> Press on the 'Exit' button to exit this experiment.`;
+        `Oops, it looks like you are on a tablet, phone or other mobile device.  This experiment can only be run from a computer or laptop.  Please return to Prolific and click "stop without completing."   If you feel like this message is in error, you can contact us at stanfordpsych251@gmail.com.<br><br> Press on the 'Exit' button to exit this experiment.`;
       check_device.choices = ["Exit"];
       check_device.data.mobile = true;
     } else {
@@ -203,7 +203,7 @@ var thank_you = {
   on_start: function(thank_you) {
     //saveData(subj_name, jsPsych.data.get().csv());
     thank_you.stimulus =
-      `<h2> Thank you for completing this experiment! </h2> <p> I really appreciate your help with this experiment and making it through to the end. <h1> To get credit for this experiment, please click on continue, which will redirect you to the completion page on Prolific.`
+      `<h2> Thank you for completing this experiment! </h2> <p> I really appreciate your help with this experiment and making it through to the end. Your participation will help us better understand how audio quality influences the judgements we make about other people. <h1> To get credit for this experiment, please click on continue, which will redirect you to the completion page on Prolific.`
 
   },
 }
