@@ -56,13 +56,67 @@ Pre-registered auditory fluency
    <script>
       subj_name = subj_name + "_comp_hire"
       var save_folder = "data/comp_hire/"
-      var distorted_audio = (getRandomIntInclusive(0, 1) == 1)
-      if (distorted_audio) {
-         var statement_audio = "sound_files/matthew_sales_short_distort4.mp3"
-      } else {
-         var statement_audio = "sound_files/matthew_sales_short.mp3"
-      }
 
+// 2x2 Between-Subjects Design
+/// 0: Computer clear, hire -> intel
+/// 1: Computer clear, intel -> hire
+/// 2: Computer distorted, hire -> intel
+/// 3: Computer distorted, intel -> hire
+/// 4: Human clear, hire -> intel
+/// 5: Human clear, intel -> hire
+/// 6: Human distorted, hire -> intel
+/// 7: Human distorted, intel -> hire
+
+      var condition = getRandomIntInclusive(0, 7);
+
+// Define audio files
+      var comp_clear = "sound_files/matthew_sales_short.mp3";
+      var comp_distorted = "sound_files/matthew_sales_short_distort4.mp3";
+      var human_clear = "sound_files/human_sm_undistorted.mp3";
+      var human_distorted = "sound_files/human_sm_distort4.mp3";
+
+// Define conditions
+      if (condition == 0) {
+         var statement_audio = comp_clear;
+         var voice_type = "computer";
+         var distorted_audio = false;
+         var question_order = "hire-first";
+}     else if (condition == 1) {
+         var statement_audio = comp_clear;
+         var voice_type = "computer";
+         var distorted_audio = false;
+         var question_order = "intel-first";
+}     else if (condition == 2) {
+         var statement_audio = comp_distorted;
+         var voice_type = "computer";
+         var distorted_audio = true;
+         var question_order = "hire-first";
+}     else if (condition == 3) {
+         var statement_audio = comp_distorted;
+         var voice_type = "computer";
+         var distorted_audio = true;
+         var question_order = "intel-first";
+}     else if (condition == 4) {
+         var statement_audio = human_clear;
+         var voice_type = "human";
+         var distorted_audio = false;
+         var question_order = "hire-first";
+}     else if (condition == 5) {
+         var statement_audio = human_clear;
+         var voice_type = "human";
+         var distorted_audio = false;
+         var question_order = "intel-first";
+}     else if (condition == 6) {
+         var statement_audio = human_distorted;
+         var voice_type = "human";
+         var distorted_audio = true;
+         var question_order = "hire-first";
+}     else {
+         var statement_audio = human_distorted;
+         var voice_type = "human";
+         var distorted_audio = true;
+         var question_order = "intel-first";
+}
 
       var preload_audio = [statement_audio, audio_test]
       var preload_images = []
@@ -156,14 +210,26 @@ Pre-registered auditory fluency
             choices: jsPsych.NO_KEYS,
             trial_duration: 50,
             on_finish: function(data){
-              data.distorted_audio = distorted_audio
-              data.sound_file = statement_audio
+               // Condition info
+               data.condition = condition;
+               data.voice_type = voice_type;
+               data.distorted_audio = distorted_audio;
+               data.sound_file = statement_audio;
+               data.question_order = question_order;
+
+               // Hireability data
                data.hire = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "hire"}).values()[0].response
-               data.response_rt = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "hire"}).values()[0].rt
+               data.hire_rt = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "hire"}).values()[0].rt
                data.hire_values = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "hire"}).values()[0].selection_values
                data.hire_rts =jsPsych.data.get().filter({trial_part: 'follow_ups', question: "hire"}).values()[0].selection_rts
 
+               // Intelligence data
+               data.intelligence = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "intelligence"}).values()[0].response;
+               data.intelligence_rt = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "intelligence"}).values()[0].rt;
+               data.intelligence_values = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "intelligence"}).values()[0].selection_values;
+               data.intelligence_rts = jsPsych.data.get().filter({trial_part: 'follow_ups', question: "intelligence"}).values()[0].selection_rts;
 
+               // Debrief data
                data.debrief_age = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].age
                data.debrief_gender = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].gender
                data.debrief_audio_output = jsPsych.data.get().filter({trial_part: 'debrief'}).values()[0].audio_output
@@ -202,33 +268,39 @@ Pre-registered auditory fluency
          return q_a;
       }
 
+// Define qustions and order
+  var hire_question = {
+       question: '<p>Based on the personal statement you just heard, please answer the following question using the slider below. .<br>(You can click on the appropriate part of the white bar, or drag the blue circle to the appropriate place.) <br><br><b>What is the likelihood that you would hire this person?</b></p><br>',
+       test: ['Very Unlikely', 'Very Likely'],
+       question_name: "hire"
+        };
+  var intel_question = {
+        question: '<p>Based on the personal statement you just heard, please answer the following question using the slider below.<br>(You can click on the appropriate part of the white bar, or drag the blue circle to the appropriate place.) <br><br><b>How intelligent is the author of this personal statement?</b></p><br>',
+        test: ['Very Unintelligent', 'Very Intelligent'],
+        question_name: "intelligence"
+  };
 
-      var follow_ups = {
-         timeline: [{
-            type: 'html-slider-response',
-            stimulus: jsPsych.timelineVariable('question'),
-            labels: jsPsych.timelineVariable('test'),
-            data: {
-               question: jsPsych.timelineVariable('question_name'),
-               trial_part: "follow_ups"
-            },
-            require_movement: true,
-            slider_width: function() {
-               return w * .75
-            }
+  var follow_ups = {
+     timeline: [{
+        type: 'html-slider-response',
+        stimulus: jsPsych.timelineVariable('question'),
+        labels: jsPsych.timelineVariable('test'),
+        data: {
+           question: jsPsych.timelineVariable('question_name'),
+           trial_part: "follow_ups"
+        },
+        require_movement: true,
+        slider_width: function() {
+           return w * .75
+        }
 
-         }],
-         timeline_variables: [{
-           question: '<p>Based on the personal statement you just heard, please answer the following question using the slider below. .<br>(You can click on the appropriate part of the white bar, or drag the blue circle to the appropriate place.) <br><br><b>What is the likelihood that you would hire this person?</b></p><br>',
-           test: ['Very Unlikely', 'Very Likely'],
-           question_name: "hire"
-            }
+     }],
+  timeline_variables: question_order === "hire-first" ? 
+     [hire_question, intel_question] : 
+     [intel_question, hire_question],
+  randomize_order: false
 
-         ],
-         randomize_order: true,
-
-      }
-
+   }
 
       /******** make timeline ********/
 
