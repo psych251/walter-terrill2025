@@ -41,7 +41,7 @@ var save_data = {
 
 // New function to save to Google Sheets
 function saveToGoogleSheets(data) {
-  var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx0PpeCH7RYM0d9lyHPYhnmSuDEG1cfqkDaJtyVjM4atGtyAJOBvqGX42W0raQJtbkU/exec';
+  var GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwNjRlbxgLs8SRXy3rB3j6WyY4dQ0yO4H2ZUn0MwEuoX_omYhLP_P7egA9VVR0RIaer-A/exec';
   
   fetch(GOOGLE_SCRIPT_URL, {
     method: 'POST',
