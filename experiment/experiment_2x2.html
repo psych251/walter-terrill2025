@@ -1,10 +1,9 @@
 <!--
-
-Original script courtsey of Robert Walter
-
-Pre-registered auditory fluency 
-    computer hire
-
+===================================================================================================================
+Replication of Walter-Terrill et al. (2025). Superficial auditory (dis)fluency biases higher-level social judgment.
+Proceedings of the National Academy of Sciences, 122(13), e2415254122. https://doi.org/10.1073/pnas.2415254122
+===================================================================================================================
+Original experimental design and scripts courtsey of Robert Walter-Terrill
 -->
 
 <!DOCTYPE html>
@@ -13,7 +12,7 @@ Pre-registered auditory fluency
 <head>
    <meta charset="UTF-8">
    <title>Objects</title>
-
+   
    <!--general -se scripts - defualt -->
    <meta name="viewport" content="width=device-width, initial-scale=1">
    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
@@ -33,8 +32,6 @@ Pre-registered auditory fluency
 
    <link href="jspsych-6/css/jspsych.css" rel="stylesheet" type="text/css">
 
-
-
    <!-- general use scripts - custom -->
    <script src="custom-js/general/rw-html-slider-response.js"></script>
    <script src="custom-js/general/rw-core-functions-2-25-2021.js"></script>
@@ -43,39 +40,70 @@ Pre-registered auditory fluency
    <script src="custom-js/general/rw-html-keyboard-response.js"></script>
    <script src="custom-js/general/rw-html-button-response.js"></script>
 
-
-    <!--general use scripts - custom -->
+   <!--general use scripts - custom -->
    <script src="custom-js/specific/rw-fluency_functions.js"></script>
    <script src="custom-js/specific/rw-audio_response.js"></script>
 
-
 </head>
-
 
 <body style="background-color:lightgray;">
    <script>
-      subj_name = subj_name + "_comp_hire"
-      var save_folder = "data/comp_hire/"
 
-// 2x2 Between-Subjects Design
-/// 0: Computer clear, hire -> intel
-/// 1: Computer clear, intel -> hire
-/// 2: Computer distorted, hire -> intel
-/// 3: Computer distorted, intel -> hire
-/// 4: Human clear, hire -> intel
-/// 5: Human clear, intel -> hire
-/// 6: Human distorted, hire -> intel
-/// 7: Human distorted, intel -> hire
+// =========================================
+// 1. CONFIGURATION
+// =========================================
 
-      var condition = getRandomIntInclusive(0, 7);
+      var exp_time = "4 minutes";
+      var exp_compensation = "$0.54";
+      var redirect_html = "https://app.prolific.com/submissions/complete?cc=CP9ZIL4P"
 
-// Define audio files
+      var do_instructions = true;
+      var do_consent = true;
+      var do_audio_check = true;
+
+      var web_link = "http://perceptionexperiments.net/RW/PD_calibration/Calibration_pilot_v2.html"
+
+      var cursor_size = [10, 15]
+
+      var next_delay = 8000; // delay in ms for each instruction screen
+      var audio_check_pass = false;
+      var exit_expeirment_text =
+         "Oops, you selected the incorrect answer.  Because this experiment requires you being able to listen to audio, and you didn't make the response given by the audio, you won't be able to complete this experiment.  <br><b>  Please return to Prolific and click 'stop without completing.''</b> <br><br>  If you have any questions or concerns, please contact the study author at robert.walter@yale.edu.  <br><br>You can close this window."
+
+      var pointer_lock = false;
+
+      var debug = false; // short experiment with extra info
+
+// =========================================
+// 2. EXPERIMENTAL DESIGN
+// =========================================
+
+// 2x2x2 Between-Subjects
+
+/// Factors:
+//// Voice Type (Computer or Human)
+//// Audio Quality (Clear or Distorted)
+//// Question Order (Hire-first or Intellgience-first)
+
+/// Conditions:
+//// 0: Computer clear, hire -> intel
+//// 1: Computer clear, intel -> hire
+//// 2: Computer distorted, hire -> intel
+//// 3: Computer distorted, intel -> hire
+//// 4: Human clear, hire -> intel
+//// 5: Human clear, intel -> hire
+//// 6: Human distorted, hire -> intel
+//// 7: Human distorted, intel -> hire
+
+/// Audio stimuli:
       var comp_clear = "sound_files/matthew_sales_short.mp3";
       var comp_distorted = "sound_files/matthew_sales_short_distort4.mp3";
       var human_clear = "sound_files/human_sm_undistorted.mp3";
       var human_distorted = "sound_files/human_sm_distort4.mp3";
 
-// Define conditions
+/// Random assignment:
+      var condition = getRandomIntInclusive(0, 7);
+
       if (condition == 0) {
          var statement_audio = comp_clear;
          var voice_type = "computer";
@@ -118,34 +146,77 @@ Pre-registered auditory fluency
          var question_order = "intel-first";
 }
 
+// =========================================
+// 3. PRELOAD SETTINGS
+// =========================================
+
       var preload_audio = [statement_audio, audio_test]
       var preload_images = []
       var preload_video = []
       var preload_progress_bar = false;
 
-      var pointer_lock = false;
+// =========================================
+// 4. DEFINE TRIALS
+// =========================================
 
-      var redirect_html = "https://app.prolific.com/submissions/complete?cc=CP9ZIL4P"
-      var debug = false; // short experiment with extra info
+/// Instructions
+      var instruct1 = `For this study, we'd like you to imagine that as part of your job, you are tasked with making a hiring decision for a highly competitive position: senior sales manager. You will listen to a few lines from a personal statement from an application for this position.  We will then ask you a few questions about your impressions of the personal statement and its author.`
+      var instruct_pages_1 = [instruct1];
 
+/// Present audio
+      var audio_question = function(audio_file) {  
+         var q_a = {
+            type: 'audio_response',
+            audio_name: audio_file,
+            continue_disabled: true,
+            play_controls: false,
+            on_start: function(q_a){
+              q_a.audio_prompt= "Click on the 'Play' button below to play the audio clip of the personal statement. <br>  <b>You will only be able to listen to this once. (You cannot replay it.) </b>"
+            },
+            on_finish: function(data) {
+           }
 
-      var do_instructions = true;
-      var do_consent = true;
-      var do_audio_check = true;
+         }
 
+         return q_a;
+      }
 
-      var exp_time = "4 minutes";
-      var exp_compensation = "$0.54";
-      var web_link = "http://perceptionexperiments.net/RW/PD_calibration/Calibration_pilot_v2.html"
+/// Main questions
+  var hire_question = {
+       question: '<p>Based on the personal statement you just heard, please answer the following question using the slider below. .<br>(You can click on the appropriate part of the white bar, or drag the blue circle to the appropriate place.) <br><br><b>What is the likelihood that you would hire this person?</b></p><br>',
+       test: ['Very Unlikely', 'Very Likely'],
+       question_name: "hire"
+        };
+  var intel_question = {
+        question: '<p>Based on the personal statement you just heard, please answer the following question using the slider below.<br>(You can click on the appropriate part of the white bar, or drag the blue circle to the appropriate place.) <br><br><b>How intelligent is the author of this personal statement?</b></p><br>',
+        test: ['Very Unintelligent', 'Very Intelligent'],
+        question_name: "intelligence"
+  };
 
-      var cursor_size = [10, 15]
+  var follow_ups = {
+     timeline: [{
+        type: 'html-slider-response',
+        stimulus: jsPsych.timelineVariable('question'),
+        labels: jsPsych.timelineVariable('test'),
+        data: {
+           question: jsPsych.timelineVariable('question_name'),
+           trial_part: "follow_ups"
+        },
+        require_movement: true,
+        slider_width: function() {
+           return w * .75
+        }
 
-      var next_delay = 8000; // delay in ms for each instruction screen
-      var audio_check_pass = false;
-      var exit_expeirment_text =
-         "Oops, you selected the incorrect answer.  Because this experiment requires you being able to listen to audio, and you didn't make the response given by the audio, you won't be able to complete this experiment.  <br><b>  Please return to Prolific and click 'stop without completing.''</b> <br><br>  If you have any questions or concerns, please contact the study author at robert.walter@yale.edu.  <br><br>You can close this window."
+     }],
+  timeline_variables: question_order === "hire-first" ? 
+     [hire_question, intel_question] : 
+     [intel_question, hire_question],
+  randomize_order: false
 
-         var debreif = {
+   }
+
+/// Debriefing questions
+ var debreif = {
             type: 'survey-html-form',
             data: {
                trial_part: 'debrief',
@@ -187,7 +258,7 @@ Pre-registered auditory fluency
 
             html: '<p>A few last questions ...<br>Please note that you must answer <strong>ALL</strong> the questions before clicking "continue." ' +
                "<div style='width: 80%; text-align: left; margin: 0 auto'>" +
-                 '<p>Have you ever been employed in a possition where you made hiring decisions? <br><input type="radio" required id="Yes_hire" name="hire_exp" value="Yes"><label for="Yes_hire">Yes</label><br><input type="radio" id="No_hire" name="hire_exp" value="No"><label for="No_hire">No</label>'+
+                 '<p>Have you ever been employed in a position where you made hiring decisions? <br><input type="radio" required id="Yes_hire" name="hire_exp" value="Yes"><label for="Yes_hire">Yes</label><br><input type="radio" id="No_hire" name="hire_exp" value="No"><label for="No_hire">No</label>'+
                '<p>Using the slider below, on a scale of 1-100, how would you rate the recording quality of the audio clip you just heard?  (With 1 being very poor, and 100 being excellent.) <br> <p style="text-align:left;">Very Poor <span style="float:right;">Excellent</span></p> <input type="range" value="50" min="1" max="100" name = "audio_quality" required class="slider" oninput="this.nextElementSibling.value = this.value"> <output id="audio_quality_out" style="text-align:center; font-size: 1.6vw">_</output> ' +
                '<p>Using the slider below, on a scale of 1-100, how well were you able to understand the words spoken in the audio clip you heard -- setting aside any possible issues with the recording quality?  (With 0 being you understood none of the words, 50 being you understood about half of the words, and 100 being you understood all the words.) <br><p style="text-align:left;">No Understanding <span style="float:right;">Complete Understanding</span></p> <input type="range" value="50" min="1" max="100" name = "understandable" required class="slider" oninput="this.nextElementSibling.value = this.value"> <output id = "understandable_out" style="text-align:center; font-size: 1.6vw">_</output> ' +
                '<p>Is there anything else we should know (either about you or how you did the experiment) that may have had an impact on your results? <br><input name="other" type="text" size="50" style="width: 100%; border-radius: 4px; padding: 10px 10px; margin: 8px 0; border: 1px solid #ccc; font-size: 15px" required></p>' +
@@ -204,12 +275,17 @@ Pre-registered auditory fluency
             }
          }
 
-         var data_collection = {
+// =========================================
+// 4. COLLECT DATA
+// =========================================
+
+var data_collection = {
             type: 'html-keyboard-response',
             stimulus: "",
             choices: jsPsych.NO_KEYS,
             trial_duration: 50,
             on_finish: function(data){
+               
                // Condition info
                data.condition = condition;
                data.voice_type = voice_type;
@@ -246,63 +322,9 @@ Pre-registered auditory fluency
             }
           }
 
-      var instruct1 =`For this study, we'd like you to imagine that as part of your job, you are tasked with making a hiring decision for a highly competitive position: senior sales manager. You will listen to a few lines from a personal statement from an application for this position.  We will then ask you a few questions about your impressions of the personal statement and its author.`
-
-      var instruct_pages_1 = [instruct1];
-
-
-      var audio_question = function(audio_file) {  
-         var q_a = {
-            type: 'audio_response',
-            audio_name: audio_file,
-            continue_disabled: true,
-            play_controls: false,
-            on_start: function(q_a){
-              q_a.audio_prompt= "Click on the 'Play' button below to play the audio clip of the personal statement. <br>  <b>You will only be able to listen to this once. (You cannot replay it.) </b>"
-            },
-            on_finish: function(data) {
-           }
-
-         }
-
-         return q_a;
-      }
-
-// Define qustions and order
-  var hire_question = {
-       question: '<p>Based on the personal statement you just heard, please answer the following question using the slider below. .<br>(You can click on the appropriate part of the white bar, or drag the blue circle to the appropriate place.) <br><br><b>What is the likelihood that you would hire this person?</b></p><br>',
-       test: ['Very Unlikely', 'Very Likely'],
-       question_name: "hire"
-        };
-  var intel_question = {
-        question: '<p>Based on the personal statement you just heard, please answer the following question using the slider below.<br>(You can click on the appropriate part of the white bar, or drag the blue circle to the appropriate place.) <br><br><b>How intelligent is the author of this personal statement?</b></p><br>',
-        test: ['Very Unintelligent', 'Very Intelligent'],
-        question_name: "intelligence"
-  };
-
-  var follow_ups = {
-     timeline: [{
-        type: 'html-slider-response',
-        stimulus: jsPsych.timelineVariable('question'),
-        labels: jsPsych.timelineVariable('test'),
-        data: {
-           question: jsPsych.timelineVariable('question_name'),
-           trial_part: "follow_ups"
-        },
-        require_movement: true,
-        slider_width: function() {
-           return w * .75
-        }
-
-     }],
-  timeline_variables: question_order === "hire-first" ? 
-     [hire_question, intel_question] : 
-     [intel_question, hire_question],
-  randomize_order: false
-
-   }
-
-      /******** make timeline ********/
+// =========================================
+// 5. BUILD TIMELINE
+// =========================================
 
       timeline.push(preload_media)
 
@@ -329,9 +351,10 @@ Pre-registered auditory fluency
    timeline.push(exit_fullscreen)
    timeline.push(final)
 
+// =========================================
+// 6. RUN EXPERIMENT
+// =========================================
 
-
-      /******** RUN TRIAL ********/
       var start_clock = Date.now();
       
       jsPsych.init({
