@@ -7,9 +7,10 @@ format:
     toc: true
     toc_depth: 3
 ---
+
 ```{r load libraries}
 library("pwr")           # for power analyses
-library("tidyverse")    
+library("tidyverse")     # for data wrangling
 library("knitr")
 library("here")
 library("ggbeeswarm")
@@ -19,7 +20,7 @@ library("ggbeeswarm")
 
 ## Introduction
 
-Human interpersonal communication is increasingly mediated by videoconferencing technology. Walter-Terrill et al. found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical support for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself.
+Human interpersonal communication is increasingly mediated by videoconferencing technology (e.g. Zoom). Walter-Terrill et al. found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical support for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself.
 
 I chose to replicate this experiment for the following reasons:
 
@@ -48,6 +49,7 @@ This replication would require recruiting 600 participants from the Prolific pla
 ### Power Analysis
 
 Original effect size, power analysis for samples to achieve 80%, 90%, 95% power to detect that effect size. Considerations of feasibility for selecting planned sample size.
+
 ```{r power analysis}
 # calculate original study's power
 pwr.t.test(n = 600, # per group
@@ -80,7 +82,6 @@ tibble(power = c(0.80, 0.90, 0.95),
        n_total = n_per_group * 2) %>% 
   kable()
 ```
-
 
 ### Planned Sample
 
@@ -129,11 +130,17 @@ Data preparation following the analysis plan.
 
 #### Import data
 pilot_A <- read_csv(here("data", "exp4_data_pilot_A.csv"))
+pilot_A_raw <- read_csv(here("data", "pilot_A_raw.csv"))
 
 #### Data exclusion / filtering
 
 #### Prepare data for analysis - create columns etc.
 pilot_A = pilot_A %>%
+  filter(data_summary == TRUE) %>% 
+  select(-c(rt, key_press, stimulus, trial_type, trial_index)) %>% 
+  relocate(subject)
+
+pilot_A_raw = pilot_A_raw %>%
   filter(data_summary == TRUE) %>% 
   select(-c(rt, key_press, stimulus, trial_type, trial_index)) %>% 
   relocate(subject)
@@ -147,7 +154,7 @@ The analyses as specified in the analysis plan.
 
 ```{r}
 # insert figure from original paper
-include_graphics(here("writeup","replication_report_files", "walter-terrill2025_fig1_d.png"))
+# include_graphics(here("writeup","replication_report_files", "walter-terrill2025_fig1_d.png"))
 
 # plot of pilot A data
 ggplot(data = pilot_A,
@@ -164,8 +171,33 @@ ggplot(data = pilot_A,
        x = "Simulated audio quality",
        y = "Rating") +
   theme_classic()
-```
 
+# plot of pilot A raw data
+typeof(pilot_A$hire)
+typeof(pilot_A_raw$hire)
+pilot_A_raw = pilot_A_raw |> 
+  mutate(hire = as.numeric(hire))
+typeof(pilot_A_raw$hire)
+
+ggplot(data = pilot_A_raw,
+       mapping = aes(x = distorted_audio,
+                     y = hire,
+                     color = distorted_audio)) +
+  geom_beeswarm(cex = 10) +
+  stat_summary(fun = mean,
+               geom = "crossbar",
+               width = 0.5,
+               color = "black") +
+  scale_x_discrete(labels = c("FALSE" = "Clear", "TRUE" = "Distorted")) +
+  labs(title = "Hireability judgments (Computer male)",
+       x = "Simulated audio quality",
+       y = "Rating") +
+  scale_y_continuous(breaks = seq(from = 0,
+                                  to = 100,
+                                  by = 10)) +
+  theme_classic()
+
+```
 
 ### Exploratory analyses
 
