@@ -25,7 +25,7 @@ library("effectsize")
 
 Human interpersonal communication is increasingly mediated by videoconferencing technology. Platforms like Zoom allow users to see themselves but not hear themselves. @walter-terrillSuperficialAuditoryDisfluency2025 found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical support for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself. Practically, microphone quality represents a relatively simple target for intervention that could increase a family's socioeconomic status if it is indeed critical in hiring decisions. The increasingly popularity of podcasts as news sources could also affect how listeners judge the quality of information presented, regardless of the content. @bailensonNonverbalOverloadTheoretical2021
 
-The target of this replication is Experiment 4, in which 1200 participants from the Prolific platform were randomly assigned to the clear or distorted audio conditions (600 in each group). After listening to the audio statement, participants rated how likely they would be to hire the candidate on a continuous scale from 0 to 100. I will additionally conduct several exploratory analyses with the goal of generating hypotheses to test in future work.
+The target of this replication is Experiment 4, in which 1200 participants from the Prolific platform were randomly assigned to the clear or distorted audio conditions (600 in each group). After listening to the audio statement, participants rated how likely they would be to hire the candidate on a continuous scale from 0 to 100. I will additionally conduct several exploratory analyses with the goal of generating hypotheses to test in future work. @
 
 2)  Apparatus and data cleaning: The authors used custom webpages built from jsPsych libraries and a custom matching algorithm to assess the accuracy of the transcriptions. If they are not able or willing to provide these materials, they would need be recreated. Imperfect transcripts were manually checked by two coders, adding time, effort, and complexity to the procedure.
 
@@ -72,13 +72,10 @@ pwr_original %>%
 
 #### Replication
 
-Because the original study found the same effect across voice types, my power analysis pools across voice type to determine the total N needed to achieve 80-95% power (Table 2).
-
-Here I will discuss the power calculation for my replication.
+Because @walter-terrillSuperficialAuditoryDisfluency2025 found a significant effect of audio quality on social judgement across voice types (male, female, American, British, human, and artificial) and contexts (hireability, romantic desirability, and credibility), my power analysis pools across voice type to determine the total N needed to achieve 80-95% power (Table 2).
 
 ```{r power analysis_replication}
 # calculate total sample size needed for 3 power levels
-# Main effect of audio quality (pooled across voice types)
 pooled_analysis <- tibble(analysis = "Audio quality main effect (pooled)",
                           effect_size = 0.43) # from Exp. 4
 
@@ -121,7 +118,11 @@ pwr = pwr.t.test(n = 125,
 
 > Planned sample size and/or termination rule, sampling frame, known demographics if any, preselection rules if any.
 
-Based on the above power analysis, I will recruit 250 participants from Prolific to yield `{r} round(pwr*100, digits = 1)`% power to detect the main effect of audio quality. The study will remain active on the Prolific platform until 250 submissions are received. Because this study involves random assignment to one of four conditions (see below), this sampling strategy may result in slight differences in n per group.
+Based on the above power analysis, I will recruit 250 participants from Prolific to yield `{r} round(pwr*100, digits = 1)`% power to detect the main effect of audio quality. Participants will be prescreened using the criteria from the original study:
+
+> "Prescreening criteria required listeners to have English as a first language, a Prolific approval rating of at least 95%, previous completion of at least 100 Prolific studies, no prior participation in another experiment from this project, and the use of a laptop or desktop computer (but not a phone or tablet)." [@walter-terrillSuperficialAuditoryDisfluency2025]
+
+The study will remain active on the Prolific platform until 250 submissions are received. As this study involves random assignment to one of four conditions (see below), this sampling strategy may result in slight differences in n per group which will be reported.
 
 ### Materials
 
@@ -147,15 +148,40 @@ The distorted audio stimuli will be identical to the original. They were prepare
 
 ### Procedure
 
-The experimental procedure will be identical to the original except as noted in unquoted text below:
+The experimental procedure will be identical to the original except as noted below:
 
 > "All experiments were completed on custom webpages created with software written in a combination of PHP, JavaScript, CSS, and HTML, with the jsPsych libraries (40). Before beginning each experiment, listeners were asked to either wear headphones or move to a quiet environment. To discourage multitasking, listeners completed the experiment with their browser in full-screen mode. During debriefing, listeners reported whether they heard the stimuli using speakers or headphones." [@walter-terrillSuperficialAuditoryDisfluency2025]
 
+Participants will be randomly assigned to one of four conditions using a between-subjects, 2 (voice type: computer or human) x 2 (audio quality: clear or distorted) design.
+
+> "Listeners first heard a short audio recording which confirmed that they could hear speech, and which allowed them to adjust the volume to a comfortable level...Listeners were then presented with the following centered written prompts [across a few separate screens, with all written text presented in black “Open Sans” font, scaled to a point size that was 1.5% of the full-screen  pixel width of the listener’s display, on a light gray (#D3D3D3) background]: “For this study, we’d like you to imagine that as part of your job, you are tasked with making a hiring decision for a highly competitive position: senior sales manager. You will listen to a few lines from a personal statement from an application for this position. We will then ask you a few questions about your impressions of the personal statement and its author. Click on the ‘Play’ button below to play the audio clip of the personal statement. You will only be able to listen to this once. (You cannot replay it.)” Listeners then heard the audio stimuli after clicking on the relevant button (which then disappeared). After the recording finished playing, listeners were asked “What is the likelihood that you would hire this person?”, and responded by using their computer mouse to position a slider (a light blue circle 35px in diameter) on a continuous scale (depicted by a white bar, 25px high, with a width equal to 75% of the full-screen width) from Very Unlikely to Very Likely  (with these terms appearing just below the bar on the far left and right, respectively). (Listeners could adjust the marker’s position as many times as they wished, after which they clicked on a “Continue” button.) Responses were recorded as values ranging from 0 (matching the bar’s far left) to 100 (representing the bar’s far right). [@walter-terrillSuperficialAuditoryDisfluency2025]
+
+In addition to the hireability question, participants will also respond to the intelligence question from the original study's Experiment 4: "How intelligent is the author of this personal statement?" The scale will also be continuous, from 0 ("Very Unintelligent) to 100 ("Very Intelligent"). The order of the questions will be counterbalanced. Finally, participants will answer the following follow-up questions during debriefing:
+
+1. Demographics: Age (textbox), Gender (select one: Male, Female, Other, Prefer not to say)
+2. How are you listening to the audio from experiment? (select one: Headphones, Laptop Speakers, External Speakers, Earbuds, Other)
+3. In 1-2 sentences, what do you think this experiment was testing? (text box)
+4. Did you experience any technical difficulties in playing the audio or did anything distract you while you were listening to the audio? If so please describe. (This will not affect whether you receive credit or compensation.) (text box)
+5. Using the slider below, on a scale of 1-100 (with 1 being very distracted, and 100 being very focused), how well did you pay attention to the experiment? (This will not affect whether you receive credit or compensation.)
+6. Have you ever been employed in a position where you made hiring decisions? (Yes or No)
+7. Using the slider below, on a scale of 1-100, how would you rate the recording quality of the audio clip you just heard? (With 1 being very poor, and 100 being excellent.)
+8. Using the slider below, on a scale of 1-100, how well were you able to understand the words spoken in the audio clip you heard -- setting aside any possible issues with the recording quality? (With 0 being you understood none of the words, 50 being you understood about half of the words, and 100 being you understood all the words.) (No Understanding to Complete Understanding)
+9. Is there anything else we should know (either about you or how you did the experiment) that may have had an impact on your results? (text box)
+
+Debriefing:
+
+Thank you for completing this experiment!
+I really appreciate your help with this experiment and making it through to the end. Your participation will help us better understand how audio quality influences the judgements we make about other people.
+
+To get credit for this experiment, please click on continue, which will redirect you to the completion page on Prolific.
+
 ### Analysis Plan
 
-Can also quote directly, though it is less often spelled out effectively for an analysis strategy section. The key is to report an analysis strategy that is as close to the original - data cleaning rules, data exclusion rules, covariates, etc. - as possible.
+The primary analysis of this replication will follow the original study:
 
-**Clarify key analysis of interest here** You can also pre-specify additional analyses you plan to do.
+> "The dependent measure was the “hireability” rating listeners gave after hearing the narrated personal statement. A between-samples two-tailed  t test was used to determine whether the average ratings differed significantly between the Clear and Distorted conditions." [@walter-terrillSuperficialAuditoryDisfluency2025] 
+
+I will also conduct several exploratory analyses to assess the main effect of voice type (computer or human) and the interaction between audio quality and voice type. The lack of a significant interaction effect will support my pooling strategy and bolster the interpreation of the main effect of audio quality.
 
 -   Confirm no sig diff in comprehensibility
 
@@ -191,7 +217,7 @@ Data preparation following the analysis plan.
 #### Load Relevant Libraries and Functions
 
 #### Import data
-pilot_B <- read_csv(here("data", "pilot_B.csv"))
+pilot_B <- read_csv(here("data", "pilot_B-anon.csv"))
 
 #### Data exclusion / filtering
 remove_outliers <- function(x, threshold = 2.5) {
@@ -206,6 +232,7 @@ pilot_B = pilot_B %>%
   filter(remove_outliers(intelligence_rt, threshold = 2.5)) %>% 
   filter(remove_outliers(debrief_understandable, threshold = 2))
 # technical difficulties? make this question yes/no, TRUE/FALSE
+# remove Prolific ids are replace with seq
 
 #### Prepare data for analysis - create columns etc.
 pilot_B = pilot_B %>%
