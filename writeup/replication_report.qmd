@@ -25,11 +25,9 @@ library("effectsize")
 
 Human interpersonal communication is increasingly mediated by videoconferencing technology. Platforms like Zoom allow users to see themselves but not hear themselves. @walter-terrillSuperficialAuditoryDisfluency2025 found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical support for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself. Practically, microphone quality represents a relatively simple target for intervention that could increase a family's socioeconomic status if it is indeed critical in hiring decisions. The increasingly popularity of podcasts as news sources could also affect how listeners judge the quality of information presented, regardless of the content. @bailensonNonverbalOverloadTheoretical2021
 
-The target of this replication is Experiment 4, in which 1200 participants from the Prolific platform were randomly assigned to the clear or distorted audio conditions (600 in each group). After listening to the audio statement, participants rated how likely they would be to hire the candidate on a continuous scale from 0 to 100. I will additionally conduct several exploratory analyses with the goal of generating hypotheses to test in future work. @
+The target of this replication is Experiment 4, in which 1200 participants from the Prolific platform were randomly assigned to the clear or distorted audio conditions (600 in each group). After listening to the audio statement, participants rated how likely they would be to hire the candidate on a continuous scale from 0 to 100. I will additionally conduct several exploratory analyses with the goal of generating hypotheses to test in future work.
 
 2)  Apparatus and data cleaning: The authors used custom webpages built from jsPsych libraries and a custom matching algorithm to assess the accuracy of the transcriptions. If they are not able or willing to provide these materials, they would need be recreated. Imperfect transcripts were manually checked by two coders, adding time, effort, and complexity to the procedure.
-
-3)  COI disclosure: In the interest of transparency, I disclose that I occasionally work as an independent contractor for the National Academies of Sciences, the publisher of PNAS, where the original paper was published. Last year I was assigned to write a brief summary of this paper for the journal. However, I had no role in selecting this paper to cover nor relationships to the authors. My work for NAS/PNAS has no bearing on the journal's editorial decisions as research summaries are assigned only after acceptance.
 
 [Repository](https://github.com/psych251/walter-terrill2025)
 
@@ -154,24 +152,23 @@ The experimental procedure will be identical to the original except as noted bel
 
 Participants will be randomly assigned to one of four conditions using a between-subjects, 2 (voice type: computer or human) x 2 (audio quality: clear or distorted) design.
 
-> "Listeners first heard a short audio recording which confirmed that they could hear speech, and which allowed them to adjust the volume to a comfortable level...Listeners were then presented with the following centered written prompts [across a few separate screens, with all written text presented in black “Open Sans” font, scaled to a point size that was 1.5% of the full-screen  pixel width of the listener’s display, on a light gray (#D3D3D3) background]: “For this study, we’d like you to imagine that as part of your job, you are tasked with making a hiring decision for a highly competitive position: senior sales manager. You will listen to a few lines from a personal statement from an application for this position. We will then ask you a few questions about your impressions of the personal statement and its author. Click on the ‘Play’ button below to play the audio clip of the personal statement. You will only be able to listen to this once. (You cannot replay it.)” Listeners then heard the audio stimuli after clicking on the relevant button (which then disappeared). After the recording finished playing, listeners were asked “What is the likelihood that you would hire this person?”, and responded by using their computer mouse to position a slider (a light blue circle 35px in diameter) on a continuous scale (depicted by a white bar, 25px high, with a width equal to 75% of the full-screen width) from Very Unlikely to Very Likely  (with these terms appearing just below the bar on the far left and right, respectively). (Listeners could adjust the marker’s position as many times as they wished, after which they clicked on a “Continue” button.) Responses were recorded as values ranging from 0 (matching the bar’s far left) to 100 (representing the bar’s far right). [@walter-terrillSuperficialAuditoryDisfluency2025]
+> "Listeners first heard a short audio recording which confirmed that they could hear speech, and which allowed them to adjust the volume to a comfortable level...Listeners were then presented with the following centered written prompts \[across a few separate screens, with all written text presented in black “Open Sans” font, scaled to a point size that was 1.5% of the full-screen pixel width of the listener’s display, on a light gray (#D3D3D3) background\]: “For this study, we’d like you to imagine that as part of your job, you are tasked with making a hiring decision for a highly competitive position: senior sales manager. You will listen to a few lines from a personal statement from an application for this position. We will then ask you a few questions about your impressions of the personal statement and its author. Click on the ‘Play’ button below to play the audio clip of the personal statement. You will only be able to listen to this once. (You cannot replay it.)” Listeners then heard the audio stimuli after clicking on the relevant button (which then disappeared). After the recording finished playing, listeners were asked “What is the likelihood that you would hire this person?”, and responded by using their computer mouse to position a slider (a light blue circle 35px in diameter) on a continuous scale (depicted by a white bar, 25px high, with a width equal to 75% of the full-screen width) from Very Unlikely to Very Likely (with these terms appearing just below the bar on the far left and right, respectively). (Listeners could adjust the marker’s position as many times as they wished, after which they clicked on a “Continue” button.) Responses were recorded as values ranging from 0 (matching the bar’s far left) to 100 (representing the bar’s far right). [@walter-terrillSuperficialAuditoryDisfluency2025]
 
 In addition to the hireability question, participants will also respond to the intelligence question from the original study's Experiment 4: "How intelligent is the author of this personal statement?" The scale will also be continuous, from 0 ("Very Unintelligent) to 100 ("Very Intelligent"). The order of the questions will be counterbalanced. Finally, participants will answer the following follow-up questions during debriefing:
 
-1. Demographics: Age (textbox), Gender (select one: Male, Female, Other, Prefer not to say)
-2. How are you listening to the audio from experiment? (select one: Headphones, Laptop Speakers, External Speakers, Earbuds, Other)
-3. In 1-2 sentences, what do you think this experiment was testing? (text box)
-4. Did you experience any technical difficulties in playing the audio or did anything distract you while you were listening to the audio? If so please describe. (This will not affect whether you receive credit or compensation.) (text box)
-5. Using the slider below, on a scale of 1-100 (with 1 being very distracted, and 100 being very focused), how well did you pay attention to the experiment? (This will not affect whether you receive credit or compensation.)
-6. Have you ever been employed in a position where you made hiring decisions? (Yes or No)
-7. Using the slider below, on a scale of 1-100, how would you rate the recording quality of the audio clip you just heard? (With 1 being very poor, and 100 being excellent.)
-8. Using the slider below, on a scale of 1-100, how well were you able to understand the words spoken in the audio clip you heard -- setting aside any possible issues with the recording quality? (With 0 being you understood none of the words, 50 being you understood about half of the words, and 100 being you understood all the words.) (No Understanding to Complete Understanding)
-9. Is there anything else we should know (either about you or how you did the experiment) that may have had an impact on your results? (text box)
+1.  Demographics: Age (textbox), Gender (select one: Male, Female, Other, Prefer not to say)
+2.  How are you listening to the audio from experiment? (select one: Headphones, Laptop Speakers, External Speakers, Earbuds, Other)
+3.  In 1-2 sentences, what do you think this experiment was testing? (text box)
+4.  Did you experience any technical difficulties in playing the audio or did anything distract you while you were listening to the audio? If so please describe. (This will not affect whether you receive credit or compensation.) (text box)
+5.  Using the slider below, on a scale of 1-100 (with 1 being very distracted, and 100 being very focused), how well did you pay attention to the experiment? (This will not affect whether you receive credit or compensation.)
+6.  Have you ever been employed in a position where you made hiring decisions? (Yes or No)
+7.  Using the slider below, on a scale of 1-100, how would you rate the recording quality of the audio clip you just heard? (With 1 being very poor, and 100 being excellent.)
+8.  Using the slider below, on a scale of 1-100, how well were you able to understand the words spoken in the audio clip you heard -- setting aside any possible issues with the recording quality? (With 0 being you understood none of the words, 50 being you understood about half of the words, and 100 being you understood all the words.) (No Understanding to Complete Understanding)
+9.  Is there anything else we should know (either about you or how you did the experiment) that may have had an impact on your results? (text box)
 
 Debriefing:
 
-Thank you for completing this experiment!
-I really appreciate your help with this experiment and making it through to the end. Your participation will help us better understand how audio quality influences the judgements we make about other people.
+Thank you for completing this experiment! I really appreciate your help with this experiment and making it through to the end. Your participation will help us better understand how audio quality influences the judgements we make about other people.
 
 To get credit for this experiment, please click on continue, which will redirect you to the completion page on Prolific.
 
@@ -179,11 +176,32 @@ To get credit for this experiment, please click on continue, which will redirect
 
 The primary analysis of this replication will follow the original study:
 
-> "The dependent measure was the “hireability” rating listeners gave after hearing the narrated personal statement. A between-samples two-tailed  t test was used to determine whether the average ratings differed significantly between the Clear and Distorted conditions." [@walter-terrillSuperficialAuditoryDisfluency2025] 
+> "The dependent measure was the “hireability” rating listeners gave after hearing the narrated personal statement. A between-samples two-tailed t test was used to determine whether the average ratings differed significantly between the Clear and Distorted conditions." [@walter-terrillSuperficialAuditoryDisfluency2025]
 
-I will also conduct several exploratory analyses to assess the main effect of voice type (computer or human) and the interaction between audio quality and voice type. The lack of a significant interaction effect will support my pooling strategy and bolster the interpreation of the main effect of audio quality.
+I will also conduct several exploratory analyses to assess the main effect of voice type (computer or human) and the interaction between audio quality and voice type.
 
--   Confirm no sig diff in comprehensibility
+Both the confirmatory and exploratory analyses will be conducted using a linear model in the form of:
+
+{{< include _shared/eq-linear-model.qmd >}}
+
+where
+
+$Y_i$ is the hireability rating for participant $i$,\
+$\beta_0$ is the mean hireability rating for the clear computer voice,\
+$\beta_1$ is the main effect of the distorted computer voice,\
+$\beta_2$ is the main effect of the clear human voice,\
+$\beta_3$ is the moderation of the effect by voice type, and\
+$\epsilon_i$ is the error term.
+
+The confirmatory analysis will be conducted using a two way analysis of variance (ANOVA).
+
+Additionally, I will rule out the potential confounds of question order, listening device, attention, and comprehension by conducting an independent t-test, one-way ANOVA, and correlation analyses, respectively.
+
+The lack of a significant interaction effect will support my pooling strategy and bolster the interpretation of the main effect of audio quality.
+
+Finally, I will examine within-person coupling between hireability and intelligence ratings.
+
+All analyses will be conducted in R.
 
 ### Differences from Original Study
 
@@ -211,13 +229,19 @@ Any differences from what was described as the original plan, or “none”.
 
 Data preparation following the analysis plan.
 
-```{r include=F}
+```{r}
 ### Data Preparation
 
 #### Load Relevant Libraries and Functions
 
 #### Import data
-pilot_B <- read_csv(here("data", "pilot_B-anon.csv"))
+pilot_B <- read_csv(here("data", "pilot_B.csv")) %>%
+  # remove identifying information
+  select(-rt, -subject, -prolific_study_id,
+         -prolific_session_id, -participant_id) %>%
+  # create sequential subject ids
+  # create anonymized data file
+  write_csv(., "../data/pilot_B-anon.csv")
 
 #### Data exclusion / filtering
 remove_outliers <- function(x, threshold = 2.5) {
@@ -232,7 +256,6 @@ pilot_B = pilot_B %>%
   filter(remove_outliers(intelligence_rt, threshold = 2.5)) %>% 
   filter(remove_outliers(debrief_understandable, threshold = 2))
 # technical difficulties? make this question yes/no, TRUE/FALSE
-# remove Prolific ids are replace with seq
 
 #### Prepare data for analysis - create columns etc.
 pilot_B = pilot_B %>%
@@ -274,13 +297,16 @@ ggplot(data = pilot_B,
                                   to = 100,
                                   by = 10)) +
   theme_classic() +
-  theme(text = element_text(size = 15)) +
+  theme(text = element_text(size = 13)) +
   theme(plot.title = element_text(hjust = 0.5))
 
 # analysis
 t_test <- t.test(hire ~ audio_quality, data = pilot_B)
 effect_size <- cohens_d(hire ~ audio_quality, data = pilot_B)
 
+model = lm(hire ~ audio_quality + voice_type + audio_quality*voice_type,
+           data = pilot_B)
+summary(model)
 ```
 
 ### Exploratory analyses
@@ -346,6 +372,10 @@ Open the discussion section with a paragraph summarizing the primary result from
 ### Commentary
 
 Add open-ended commentary (if any) reflecting (a) insights from follow-up exploratory analysis, (b) assessment of the meaning of the replication (or not) - e.g., for a failure to replicate, are the differences between original and present study ones that definitely, plausibly, or are unlikely to have been moderators of the result, and (c) discussion of any objections or challenges raised by the current and original authors about the replication attempt. None of these need to be long.
+
+### COI Disclosure
+
+In the interest of transparency, I disclose that I occasionally work as an independent contractor for the National Academies of Sciences, the publisher of PNAS, where the original paper was published. Last year I was assigned to write a brief summary of this paper for the journal. However, I had no role in selecting this paper to cover nor relationships to the authors. My work for NAS/PNAS has no bearing on the journal's editorial decisions as research summaries are assigned only after acceptance.
 
 ## References
 

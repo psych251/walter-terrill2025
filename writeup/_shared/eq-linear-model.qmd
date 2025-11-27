@@ -1,0 +1,1 @@
+$$Y_i = \beta_0 + \beta_1X_{1i} + \beta_2X_{2i} + \beta_3(X_{1i} \times X_{2i}) + \epsilon_i$$ {#eq-1}
