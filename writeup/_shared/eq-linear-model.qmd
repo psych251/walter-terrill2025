@@ -1,1 +1,12 @@
 $$Y_i = \beta_0 + \beta_1X_{1i} + \beta_2X_{2i} + \beta_3(X_{1i} \times X_{2i}) + \epsilon_i$$ {#eq-1}
+
+where
+
+$Y_i$ (Outcome) is the hireability rating for participant $i$,\
+$\beta_0$ (Intercept) is the mean outcome when all predictors = 0,\
+$\beta_1$ is the main effect of audio quality,\
+$X_{1i}$ is audio quality for participant $i$, dummy coded as 0 = Clear and 1 = Distorted,\
+$\beta_2$ is the main effect of voice type,\
+$X_{2i}$ is voice type for participant $i$, dummy coded as 0 = Computer and 1 = Human,\
+$\beta_3$ (Interaction) is the interaction effect between audio quality and voice type, and\
+$\epsilon_i$ (Error) is the residual variation not explained by the model.

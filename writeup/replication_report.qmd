@@ -2,6 +2,7 @@
 title: "Replication of Superficial Auditory (Dis)fluency Biases Higher-Level Social Judgment by Walter-Terrill, Ongchoco & Scholl (2025, Proceedings of the National Academy of Sciences)"
 author: "David Barnstone (dbarnsto@stanford.edu)"
 date: "`r format(Sys.time(), '%B %d, %Y')`"
+number-sections: true
 bibliography: references.bib
 csl: apa.csl
 format:
@@ -17,106 +18,127 @@ library("knitr")         # for knitting RMarkdown
 library("here")          # for managing file paths
 library("ggbeeswarm")    # for beeswarm plots
 library("effectsize")
+library("emmeans")
 ```
 
 <!-- Replication reports should all use this template to standardize reporting across projects.  These reports will be public supplementary materials that accompany the summary report(s) of the aggregate results. -->
 
 ## Introduction
 
-Human interpersonal communication is increasingly mediated by videoconferencing technology. Platforms like Zoom allow users to see themselves but not hear themselves. @walter-terrillSuperficialAuditoryDisfluency2025 found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical support for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself. Practically, microphone quality represents a relatively simple target for intervention that could increase a family's socioeconomic status if it is indeed critical in hiring decisions. The increasingly popularity of podcasts as news sources could also affect how listeners judge the quality of information presented, regardless of the content. @bailensonNonverbalOverloadTheoretical2021
+Human interpersonal communication is increasingly mediated by videoconferencing technology. While platforms like Zoom allow users to see themselves, they are not typically able to hear how they sound to others. @walter-terrillSuperficialAuditoryDisfluency2025 found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical support for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself. Practically, microphone quality represents a relatively simple target for intervention that could increase a family's socioeconomic status if it is indeed critical in hiring decisions. The increasingly popularity of podcasts as news sources could also affect how listeners judge the quality of information presented, regardless of the content.
 
 The target of this replication is Experiment 4, in which 1200 participants from the Prolific platform were randomly assigned to the clear or distorted audio conditions (600 in each group). After listening to the audio statement, participants rated how likely they would be to hire the candidate on a continuous scale from 0 to 100. I will additionally conduct several exploratory analyses with the goal of generating hypotheses to test in future work.
 
-2)  Apparatus and data cleaning: The authors used custom webpages built from jsPsych libraries and a custom matching algorithm to assess the accuracy of the transcriptions. If they are not able or willing to provide these materials, they would need be recreated. Imperfect transcripts were manually checked by two coders, adding time, effort, and complexity to the procedure.
-
-[Repository](https://github.com/psych251/walter-terrill2025)
-
-[Original paper](https://github.com/psych251/walter-terrill2025/blob/main/original_paper/walter-terrill-et-al-2025.pdf)
+All materials and details needed to conduct this replication can be found in the [repository](https://github.com/psych251/walter-terrill2025) and in the [original paper](https://github.com/psych251/walter-terrill2025/blob/main/original_paper/walter-terrill-et-al-2025.pdf).
 
 ## Methods
 
 ### Power Analysis
 
+```{r define parameters}
+# define sample and effect sizes for original experiments of interest
+pwr_original = tibble(experiment = c("Exp. 1: Hireability",
+                                     "Exp. 4: Hireability",
+                                     "Exp. 5: Intelligence"),
+                      voice_type = c("Human", "Computer", "Computer"),
+                      n_per_group = c(300, 600, 600),
+                      total_n = n_per_group * 2,
+                      effect_size = c(0.35, 0.43, 0.20))
+
+# add row for replication
+pwr_replication = pwr_original %>% 
+  add_row(experiment = "Exp. 1 + 4: Pooled",
+          voice_type = "Both",
+          n_per_group = 125,
+          total_n = n_per_group * 2,
+          effect_size = 0.43)
+
+# set significance threshold
+alpha = 0.05
+```
+
 #### Original Study
 
-Table 1 displays the results of a post-hoc power analysis for the original study's Experiment 4 as well as Experiments 1 and 5 (briefly explain what these are).
+@tbl-original_power displays the results of a post-hoc power analysis for the original study's Experiments 1, 4, and 5, which all used the same application statement that was recorded by a human male (Experiment 1) or computer generated (Experiments 4 and 5). All three experiments also used the same audio quality manipulation.
 
 ```{r power analysis_original}
-# calculate original study's power
-pwr_original = tibble(experiment = c(
-  "Exp. 1: Hireability",
-  "Exp. 4: Hireability",
-  "Exp. 5: Intelligence"),
-  voice_type = c("Human", "Computer", "Computer"),
-  n_per_group = c(300, 600, 600),
-  total_n = c(600, 1200, 1200),
-  effect_size = c(0.35, 0.43, 0.20)) %>%
-  mutate(power = map2_dbl(
-    n_per_group,
-    effect_size,
-    ~{pwr.t.test(n = .x,
-                 d = .y,
-                 sig.level = 0.05,
-                 type = "two.sample",
-                 alternative = "two.sided")$power}))
+#| label: tbl-original_power
+#| tbl-cap: "Original Study Power Analysis (post hoc)"
 
 pwr_original %>%
-  kable(caption =
-          "Table 1. Original Study Power Analysis (post hoc)",
-        digits = 2,
-        col.names = c("Experiment", "Voice", "n per Group",
-                      "Total N", "Effect Size (d)", "Power"))
+  mutate(power = map2_chr(n_per_group,
+                          effect_size,
+                          ~{paste0(round(pwr.t.test(
+                            n = .x,
+                            d = .y,
+                            sig.level = alpha,
+                            type = "two.sample",
+                            alternative = "two.sided")
+                            $power * 100, 1), "%")})) %>%
+  kable(digits = 2)
 ```
 
 #### Replication
 
-Because @walter-terrillSuperficialAuditoryDisfluency2025 found a significant effect of audio quality on social judgement across voice types (male, female, American, British, human, and artificial) and contexts (hireability, romantic desirability, and credibility), my power analysis pools across voice type to determine the total N needed to achieve 80-95% power (Table 2).
+@tbl-replication_power shows the total N needed to achieve 80-95% power to detect the main effect of audio quality on hireability ratings. Because @walter-terrillSuperficialAuditoryDisfluency2025 found a significant effect of audio quality on social judgement across voice types (male, female, American, British, human, and artificial) and contexts (hireability, romantic desirability, and credibility), this power analysis pools across voice type.
 
-```{r power analysis_replication}
+```{r power analysis_80-95}
+#| label: tbl-replication_power
+#| tbl-cap: "Replication Power Analysis (a priori)"
+
 # calculate total sample size needed for 3 power levels
-pooled_analysis <- tibble(analysis = "Audio quality main effect (pooled)",
-                          effect_size = 0.43) # from Exp. 4
-
-pooled_power = pooled_analysis %>%
-  mutate(
-    n_80 = map_dbl(effect_size, ~ceiling(
-      pwr.t.test(d = .x,
-               power = 0.80,
-               sig.level = 0.05,
-               type = "two.sample")$n)),
-    n_90 = map_dbl(effect_size, ~ceiling(
-      pwr.t.test(d = .x,
-                 power = 0.90,
-                 sig.level = 0.05, 
-                 type = "two.sample")$n)),
-    n_95 = map_dbl(effect_size, ~ceiling(
-      pwr.t.test(d = .x,
-                 power = 0.95,
-                 sig.level = 0.05, 
-                 type = "two.sample")$n)),
-    `80%` = n_80 * 2,
-    `90%` = n_90 * 2,
-    `95%` = n_95 * 2)
-
-pooled_power %>%
+tibble(analysis = "Audio quality main effect (pooled)",
+       effect_size = 0.43, # from Exp. 4
+       n_80 = map_dbl(effect_size, ~ceiling(
+         pwr.t.test(d = .x,
+                    power = 0.80,
+                    sig.level = alpha,
+                    type = "two.sample")$n)),
+       n_90 = map_dbl(effect_size, ~ceiling(
+         pwr.t.test(d = .x,
+                    power = 0.90,
+                    sig.level = alpha,
+                    type = "two.sample")$n)),
+       n_95 = map_dbl(effect_size, ~ceiling(
+         pwr.t.test(d = .x,
+                    power = 0.95,
+                    sig.level = alpha,
+                    type = "two.sample")$n)),
+       `80%` = n_80 * 2,
+       `90%` = n_90 * 2,
+       `95%` = n_95 * 2) %>%
   select(analysis, effect_size, `80%`, `90%`, `95%`) %>%
-  kable(caption = "Table 2. Replication Power Analysis (a priori)",
-        col.names = c("Analysis", "Effect Size (d)", "80% Power", "90% Power", "95% Power"))
-  
-# final power analysis
-pwr = pwr.t.test(n = 125,
-                 d = 0.43,
-                 sig.level = 0.05,
-                 power = NULL,
-                 type = "two.sample",
-                 alternative = "two.sided")$power
+  kable(col.names = c("Analysis", "Effect Size (d)",
+                      "80% Power", "90% Power", "95% Power"))
+```
+
+Accordingly, I selected a total N of 250 to yield \>90% power and compared this sample size's power to detect the effect sizes of the original Experiments 1, 4, and 5. As shown in @tbl-replication_power_comparison, these unpooled experiments would be underpowered (\<80 %) at N = 250. Thus, I chose to proceed with a replication of the original study's Experiments 1 and 4, which were identical except for the voice type.
+
+```{r}
+#| label: tbl-replication_power_comparison
+#| tbl-cap: "Replication Power Comparison (a priori)"
+
+# compare power across experiments
+pwr_replication = pwr_replication %>% 
+  mutate(n_per_group = c(62, 62, 125, 125),
+         total_n = 250,
+         power = map2_chr(n_per_group, effect_size, ~{
+           paste0(round(pwr.t.test(n = .x,
+                                   d = .y,
+                                   sig.level = alpha,
+                                   type = "two.sample")
+                        $power * 100, 1), "%")}))
+
+pwr = pwr_replication$power[4]
+
+# print the table
+pwr_replication %>%
+  kable()
 ```
 
 ### Planned Sample
 
-> Planned sample size and/or termination rule, sampling frame, known demographics if any, preselection rules if any.
-
-Based on the above power analysis, I will recruit 250 participants from Prolific to yield `{r} round(pwr*100, digits = 1)`% power to detect the main effect of audio quality. Participants will be prescreened using the criteria from the original study:
+Based on the above power analysis, I will recruit 250 participants from Prolific to yield `{r} pwr` power to detect the main effect of audio quality. Participants will be prescreened using the criteria from the original study:
 
 > "Prescreening criteria required listeners to have English as a first language, a Prolific approval rating of at least 95%, previous completion of at least 100 Prolific studies, no prior participation in another experiment from this project, and the use of a laptop or desktop computer (but not a phone or tablet)." [@walter-terrillSuperficialAuditoryDisfluency2025]
 
@@ -154,9 +176,9 @@ Participants will be randomly assigned to one of four conditions using a between
 
 > "Listeners first heard a short audio recording which confirmed that they could hear speech, and which allowed them to adjust the volume to a comfortable level...Listeners were then presented with the following centered written prompts \[across a few separate screens, with all written text presented in black “Open Sans” font, scaled to a point size that was 1.5% of the full-screen pixel width of the listener’s display, on a light gray (#D3D3D3) background\]: “For this study, we’d like you to imagine that as part of your job, you are tasked with making a hiring decision for a highly competitive position: senior sales manager. You will listen to a few lines from a personal statement from an application for this position. We will then ask you a few questions about your impressions of the personal statement and its author. Click on the ‘Play’ button below to play the audio clip of the personal statement. You will only be able to listen to this once. (You cannot replay it.)” Listeners then heard the audio stimuli after clicking on the relevant button (which then disappeared). After the recording finished playing, listeners were asked “What is the likelihood that you would hire this person?”, and responded by using their computer mouse to position a slider (a light blue circle 35px in diameter) on a continuous scale (depicted by a white bar, 25px high, with a width equal to 75% of the full-screen width) from Very Unlikely to Very Likely (with these terms appearing just below the bar on the far left and right, respectively). (Listeners could adjust the marker’s position as many times as they wished, after which they clicked on a “Continue” button.) Responses were recorded as values ranging from 0 (matching the bar’s far left) to 100 (representing the bar’s far right). [@walter-terrillSuperficialAuditoryDisfluency2025]
 
-In addition to the hireability question, participants will also respond to the intelligence question from the original study's Experiment 4: "How intelligent is the author of this personal statement?" The scale will also be continuous, from 0 ("Very Unintelligent) to 100 ("Very Intelligent"). The order of the questions will be counterbalanced. Finally, participants will answer the following follow-up questions during debriefing:
+In addition to the hireability question, participants will respond to the following question from the original study's Experiment 4, which used the same script and audio manipulation: "How intelligent is the author of this personal statement?" The scale will also be continuous, from 0 ("Very Unintelligent) to 100 ("Very Intelligent"). The order of the questions will be counterbalanced. Finally, participants will answer the following follow-up questions during debriefing:
 
-1.  Demographics: Age (textbox), Gender (select one: Male, Female, Other, Prefer not to say)
+1.  Demographics: Age (text box), Gender (select one: Male, Female, Other, Prefer not to say)
 2.  How are you listening to the audio from experiment? (select one: Headphones, Laptop Speakers, External Speakers, Earbuds, Other)
 3.  In 1-2 sentences, what do you think this experiment was testing? (text box)
 4.  Did you experience any technical difficulties in playing the audio or did anything distract you while you were listening to the audio? If so please describe. (This will not affect whether you receive credit or compensation.) (text box)
@@ -166,40 +188,25 @@ In addition to the hireability question, participants will also respond to the i
 8.  Using the slider below, on a scale of 1-100, how well were you able to understand the words spoken in the audio clip you heard -- setting aside any possible issues with the recording quality? (With 0 being you understood none of the words, 50 being you understood about half of the words, and 100 being you understood all the words.) (No Understanding to Complete Understanding)
 9.  Is there anything else we should know (either about you or how you did the experiment) that may have had an impact on your results? (text box)
 
-Debriefing:
+Finally, participants will see the following debriefing screen:
 
-Thank you for completing this experiment! I really appreciate your help with this experiment and making it through to the end. Your participation will help us better understand how audio quality influences the judgements we make about other people.
-
-To get credit for this experiment, please click on continue, which will redirect you to the completion page on Prolific.
+> Thank you for completing this experiment! I really appreciate your help with this experiment and making it through to the end. Your participation will help us better understand how audio quality influences the judgements we make about other people.
+>
+> To get credit for this experiment, please click on continue, which will redirect you to the completion page on Prolific.
 
 ### Analysis Plan
 
-The primary analysis of this replication will follow the original study:
-
-> "The dependent measure was the “hireability” rating listeners gave after hearing the narrated personal statement. A between-samples two-tailed t test was used to determine whether the average ratings differed significantly between the Clear and Distorted conditions." [@walter-terrillSuperficialAuditoryDisfluency2025]
-
-I will also conduct several exploratory analyses to assess the main effect of voice type (computer or human) and the interaction between audio quality and voice type.
-
-Both the confirmatory and exploratory analyses will be conducted using a linear model in the form of:
+The primary analyses will be conducted using the following linear model:
 
 {{< include _shared/eq-linear-model.qmd >}}
 
-where
+**Confirmatory analysis:** To replicate the finding from the original study's Experiment 4, I will test the effect of audio quality on hireability using estimated marginal means. This approach is equivalent to the "between-samples two-tailed t test" used by [@walter-terrillSuperficialAuditoryDisfluency2025]. Additionally, I will rule out the potential confound of comprehension using an independent samples t-test.
 
-$Y_i$ is the hireability rating for participant $i$,\
-$\beta_0$ is the mean hireability rating for the clear computer voice,\
-$\beta_1$ is the main effect of the distorted computer voice,\
-$\beta_2$ is the main effect of the clear human voice,\
-$\beta_3$ is the moderation of the effect by voice type, and\
-$\epsilon_i$ is the error term.
+**Exploratory analyses:** I will use the interaction term in @eq-1 to test the potential effect of voice type on hireability, which was not directly tested in the original study. A non-significant interaction will support the generalizbility of the audio quality effect and, thus, the pooling strategy.
 
-The confirmatory analysis will be conducted using a two way analysis of variance (ANOVA).
+I will also examine the effect of audio quality on perceived intelligence using the same form of @eq-1, except the outcome variable $Y_i$ will be the intelligence rating. This test will attempt to replicate the original study's Experiment 5, although this result should be interpreted with caution due to low power (d = 0.20).
 
-Additionally, I will rule out the potential confounds of question order, listening device, attention, and comprehension by conducting an independent t-test, one-way ANOVA, and correlation analyses, respectively.
-
-The lack of a significant interaction effect will support my pooling strategy and bolster the interpretation of the main effect of audio quality.
-
-Finally, I will examine within-person coupling between hireability and intelligence ratings.
+Finally, to generate hypotheses for future directions, I will investigate (1) within-person correlations between hireability and intelligence judgements.
 
 All analyses will be conducted in R.
 
@@ -227,29 +234,30 @@ Any differences from what was described as the original plan, or “none”.
 
 ### Data preparation
 
-Data preparation following the analysis plan.
+This code anonomyzes the data file and removes participants according to the exclusion critera used in the original study: self-reported attention \< 70/100, technical difficulties or distractions, response times \> \$\pm\$2.5 SD than the mean, and comprehension scores \$\pm\$2 SD from the mean.
 
-```{r}
-### Data Preparation
-
-#### Load Relevant Libraries and Functions
-
+```{r data prep}
 #### Import data
 pilot_B <- read_csv(here("data", "pilot_B.csv")) %>%
+  filter(data_summary == TRUE) %>% 
   # remove identifying information
   select(-rt, -subject, -prolific_study_id,
          -prolific_session_id, -participant_id) %>%
   # create sequential subject ids
+  mutate(id = seq(1:nrow(.))) %>% 
   # create anonymized data file
   write_csv(., "../data/pilot_B-anon.csv")
 
 #### Data exclusion / filtering
+
+# define function to calculate distance from the mean
 remove_outliers <- function(x, threshold = 2.5) {
   mean_x <- mean(x, na.rm = TRUE)
   sd_x <- sd(x, na.rm = TRUE)
   abs(x - mean_x) <= threshold * sd_x
 }
 
+# exclusion
 pilot_B = pilot_B %>% 
   filter(debrief_attention >= 70) %>% 
   filter(remove_outliers(hire_rt, threshold = 2.5)) %>% 
@@ -259,10 +267,7 @@ pilot_B = pilot_B %>%
 
 #### Prepare data for analysis - create columns etc.
 pilot_B = pilot_B %>%
-  filter(data_summary == TRUE) %>% 
-  select(-c(key_press, stimulus, trial_type, trial_index))
-
-pilot_B = pilot_B %>% 
+  select(-c(key_press, stimulus, trial_type, trial_index)) %>%
   mutate(distorted_audio = as.factor(distorted_audio),
          audio_quality = fct_recode(distorted_audio,
                                     "Clear" = "FALSE",
@@ -271,27 +276,23 @@ pilot_B = pilot_B %>%
 
 ### Confirmatory analysis
 
-The analyses as specified in the analysis plan.
-
-*Side-by-side graph with original graph is ideal here*
+![Figure from the original study to reproduce (in part)](_shared/pnas_fig1.jpg)
 
 ```{r}
-# insert figure from original paper
-# include_graphics(here("writeup","replication_report_files", "walter-terrill2025_fig1_d.png"))
-
-# plot of pilot B data pooled across voice type target n = 125 per group
+# plot main effect of audio quality on hireability
 ggplot(data = pilot_B,
        mapping = aes(x = audio_quality,
                      y = hire,
                      color = audio_quality)) +
-  geom_beeswarm(cex = 10) +
+  geom_beeswarm(cex = 10,
+                size = 2) +
   stat_summary(fun = mean,
                geom = "crossbar",
                width = 0.5,
                color = "grey") +
   scale_color_brewer(palette = "Set1") +
-  labs(title = "Hireability judgments (pooled)",
-       x = "Simulated audio quality",
+  labs(title = "Hireability",
+       x = "Simulated Audio Quality",
        y = "Rating") +
   scale_y_continuous(breaks = seq(from = 0,
                                   to = 100,
@@ -299,46 +300,41 @@ ggplot(data = pilot_B,
   theme_classic() +
   theme(text = element_text(size = 13)) +
   theme(plot.title = element_text(hjust = 0.5))
-
-# analysis
-t_test <- t.test(hire ~ audio_quality, data = pilot_B)
-effect_size <- cohens_d(hire ~ audio_quality, data = pilot_B)
-
-model = lm(hire ~ audio_quality + voice_type + audio_quality*voice_type,
-           data = pilot_B)
-summary(model)
 ```
 
-### Exploratory analyses
-
-Purpose of the following analyses are to generate hypotheses for future testing.
+```{r}
+# build linear model for hireability
+model_hire = lm(hire ~ audio_quality + voice_type + audio_quality*voice_type,
+           data = pilot_B)
+summary(model_hire)
+```
 
 ```{r}
-# plot pooled intel ratings (Exp. 5)
-ggplot(data = pilot_B,
-       mapping = aes(x = audio_quality,
-                     y = intelligence,
-                     color = audio_quality)) +
-  geom_beeswarm(cex = 10) +
-  stat_summary(fun = mean,
-               geom = "crossbar",
-               width = 0.5,
-               color = "grey") +
-  scale_color_brewer(palette = "Set1") +
-  labs(title = "Intellgience judgments (pooled across voice type)",
-       x = "Simulated audio quality",
-       y = "Rating") +
-  scale_y_continuous(breaks = seq(from = 0,
-                                  to = 100,
-                                  by = 10)) +
-  theme_classic()
+# main effect of audio quality on hireability
+emm <- emmeans(model_hire, ~ audio_quality)
+pairs(emm)
+eff_size(emm, sigma = sigma(model_hire), edf = df.residual(model_hire))
 
+# comprehension check
+t.test(debrief_understandable ~ audio_quality, 
+                             data = pilot_B,
+                             var.equal = FALSE)
+
+cohens_d(debrief_understandable ~ audio_quality, 
+                           data = pilot_B)
+```
+
+### Exploratory analyses {#sec-exploratory}
+
+```{r, message = FALSE, warning = FALSE}
 # plot interaction voice type x audio quality
 ggplot(data = pilot_B,
        mapping = aes(x = voice_type,
                      y = hire,
                      color = audio_quality,
                      group = audio_quality)) +
+  geom_jitter(width = 0.1,
+              alpha = 0.1) +
   stat_summary(fun.data = mean_cl_boot,
                geom = "pointrange",
                size = 0.5) +
@@ -346,21 +342,78 @@ ggplot(data = pilot_B,
                geom = "line",
                linewidth = 1) +
   scale_color_brewer(palette = "Set1") +
+  scale_y_continuous(breaks = seq(from = 0,
+                                  to = 100,
+                                  by = 10)) +
   labs(title = "Hireability x Voice Type",
-       x = "voice type",
+       x = "Voice Type",
+       y = "Rating") +
+  theme_classic() +
+  theme(text = element_text(size = 13)) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+anova(model_hire)
+eta_squared(model_hire, partial = TRUE)
+```
+
+```{r}
+# plot main effect of audio quality on intelligence (Exp. 5)
+ggplot(data = pilot_B,
+       mapping = aes(x = audio_quality,
+                     y = intelligence,
+                     color = audio_quality)) +
+  geom_beeswarm(cex = 10,
+                size = 2) +
+  stat_summary(fun = mean,
+               geom = "crossbar",
+               width = 0.5,
+               color = "grey") +
+  scale_color_brewer(palette = "Set1") +
+  labs(title = "Intelligence",
+       x = "Simulated Audio Quality",
        y = "Rating") +
   scale_y_continuous(breaks = seq(from = 0,
                                   to = 100,
                                   by = 10)) +
-  theme_classic()
+  theme_classic() +
+  theme(text = element_text(size = 13)) +
+  theme(plot.title = element_text(hjust = 0.5))
+```
 
-model <- aov(hire ~ audio_quality * voice_type, data = pilot_B)
-summary(model)
+```{r}
+# build linear model for intelligence
+model_intel = lm(intelligence ~ audio_quality + voice_type + audio_quality*voice_type,
+           data = pilot_B)
+summary(model_intel)
+```
+```{r}
+# main effect of audio quality on intelligence
+emm <- emmeans(model_intel, ~ audio_quality)
+pairs(emm)
+eff_size(emm, sigma = sigma(model_intel), edf = df.residual(model_intel))
+```
 
-# moderation by hiring experience?
+```{r}
+# within-person coupling: are hire and intelligence ratings correlated?
+cor_overall <- cor.test(pilot_B$hire, pilot_B$intelligence, 
+                        method = "pearson")
+r_value <- cor_overall$estimate
+p_value <- cor_overall$p.value
+ci_lower <- cor_overall$conf.int[1]
+ci_upper <- cor_overall$conf.int[2]
 
-# within-person coupling 
-
+ggplot(pilot_B, aes(x = hire, y = intelligence)) +
+  geom_point(alpha = 0.4) +
+  geom_smooth(method = "lm", color = "blue", fill = "lightblue") +
+  labs(
+    title = "Hireability and Intelligence Ratings",
+    subtitle = sprintf("r = %.2f, p = %.3f", r_value, p_value),
+    x = "Hireability Rating",
+    y = "Intelligence Rating"
+  ) +
+  theme_minimal()
 ```
 
 ## Discussion
