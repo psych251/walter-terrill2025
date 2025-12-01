@@ -304,7 +304,7 @@ ggplot(data = pilot_B,
 
 ```{r}
 # build linear model for hireability
-model_hire = lm(hire ~ audio_quality + voice_type + audio_quality*voice_type,
+model_hire = lm(hire ~ 1 + audio_quality + voice_type + audio_quality*voice_type,
            data = pilot_B)
 summary(model_hire)
 ```
