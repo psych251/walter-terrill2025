@@ -9,4 +9,4 @@ $X_{1i}$ is audio quality for participant $i$, dummy coded as 0 = Clear and 1 = 
 $\beta_2$ is the main effect of voice type,\
 $X_{2i}$ is voice type for participant $i$, dummy coded as 0 = Computer and 1 = Human,\
 $\beta_3$ (Interaction) is the interaction effect between audio quality and voice type, and\
-$\epsilon_i$ (Error) is the residual variation not explained by the model.
+$\epsilon_i$ (Error) is the residual variation not explained by the other predictors.
