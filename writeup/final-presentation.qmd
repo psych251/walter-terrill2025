@@ -1,12 +1,31 @@
 ---
-title: "final-presentation"
+title: "Replication Project"
 format: revealjs
 editor: visual
+bibliography: references.bib
+csl: apa.csl
 ---
 
 ## Quarto
 
-Quarto enables you to weave together content and executable code into a finished presentation. To learn more about Quarto presentations see <https://quarto.org/docs/presentations/>.
+![Figure from the original study to reproduce (in part)](_shared/pnas_fig1.jpg)
+
+## A Reference
+
+@walter-terrillSuperficialAuditoryDisfluency2025
+
+## Linear Model
+
+::: {style="font-size: .8em;"}
+{{< include _shared/eq-linear-model.qmd >}}
+:::
+
+## Audio
+
+|   | Human | Computer |
+|------------------------|:-------------------------|---------------------:|
+| Clear | <audio controls> <source src="https://raw.githubusercontent.com/psych251/walter-terrill2025/main/experiment/audio/human_sm_undistorted.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> | <audio controls> <source src="https://raw.githubusercontent.com/psych251/walter-terrill2025/main/experiment/audio/human_sm_distort4.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> |
+| Distorted | <audio controls> <source src="https://raw.githubusercontent.com/psych251/walter-terrill2025/main/experiment/audio/matthew_sales_short.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> | <audio controls> <source src="https://raw.githubusercontent.com/psych251/walter-terrill2025/main/experiment/audio/matthew_sales_short_distort4.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> |
 
 ## Bullets
 
