@@ -59,7 +59,7 @@ alpha = 0.05
 
 #### Original Study
 
-@tbl-original_power displays the results of a post-hoc power analysis for the original study's Experiments 1, 4, and 5, which all used the same application statement that was recorded by a human male (Experiment 1) or computer generated (Experiments 4 and 5). All three experiments also used the same audio quality manipulation.
+@tbl-original_power displays the results of a post-hoc power analysis for the original study's Experiments 1, 4, and 5, which all used the same application statement that was recorded by a human male (Experiment 1) or computer generated (Experiments 4 and 5). All three experiments also used the same audio quality manipulation. Experiment 5 was identical to Experiments 1 and 4, except the outcome variable was the perceived intellgience of the speaker, measured on the same continuous 0-100 scale.
 
 ```{r power analysis_original}
 #| label: tbl-original_power
@@ -112,7 +112,7 @@ tibble(analysis = "Audio quality main effect (pooled)",
                       "80% Power", "90% Power", "95% Power"))
 ```
 
-Accordingly, I selected a total N of 250 to yield \>90% power and compared this sample size's power to detect the effect sizes of the original Experiments 1, 4, and 5. As shown in @tbl-replication_power_comparison, these unpooled experiments would be underpowered (\<80 %) at N = 250. Thus, I chose to proceed with a replication of the original study's Experiments 1 and 4, which were identical except for the voice type.
+Accordingly, I selected a total N of 250 to yield > 90% power and compared this sample size's power to detect the effect sizes of the original Experiments 1, 4, and 5. As shown in @tbl-replication_power_comparison, these unpooled experiments would be underpowered (< 80%) at N = 250. Thus, I chose to proceed with a replication of the original study's Experiments 1 and 4, which were identical except for the voice type.
 
 ```{r}
 #| label: tbl-replication_power_comparison
@@ -176,7 +176,7 @@ Participants will be randomly assigned to one of four conditions using a between
 
 > "Listeners first heard a short audio recording which confirmed that they could hear speech, and which allowed them to adjust the volume to a comfortable level...Listeners were then presented with the following centered written prompts \[across a few separate screens, with all written text presented in black “Open Sans” font, scaled to a point size that was 1.5% of the full-screen pixel width of the listener’s display, on a light gray (#D3D3D3) background\]: “For this study, we’d like you to imagine that as part of your job, you are tasked with making a hiring decision for a highly competitive position: senior sales manager. You will listen to a few lines from a personal statement from an application for this position. We will then ask you a few questions about your impressions of the personal statement and its author. Click on the ‘Play’ button below to play the audio clip of the personal statement. You will only be able to listen to this once. (You cannot replay it.)” Listeners then heard the audio stimuli after clicking on the relevant button (which then disappeared). After the recording finished playing, listeners were asked “What is the likelihood that you would hire this person?”, and responded by using their computer mouse to position a slider (a light blue circle 35px in diameter) on a continuous scale (depicted by a white bar, 25px high, with a width equal to 75% of the full-screen width) from Very Unlikely to Very Likely (with these terms appearing just below the bar on the far left and right, respectively). (Listeners could adjust the marker’s position as many times as they wished, after which they clicked on a “Continue” button.) Responses were recorded as values ranging from 0 (matching the bar’s far left) to 100 (representing the bar’s far right). [@walter-terrillSuperficialAuditoryDisfluency2025]
 
-In addition to the hireability question, participants will respond to the following question from the original study's Experiment 4, which used the same script and audio manipulation: "How intelligent is the author of this personal statement?" The scale will also be continuous, from 0 ("Very Unintelligent) to 100 ("Very Intelligent"). The order of the questions will be counterbalanced. Finally, participants will answer the following follow-up questions during debriefing:
+In addition to the hireability question, participants will respond to the following question from the original study's Experiment 4, which used the same script and audio manipulation: "How intelligent is the author of this personal statement?" The scale will also be continuous, from 0 ("Very Unintelligent) to 100 ("Very Intelligent"). The order of the questions will be counterbalanced. Participants will answer the following follow-up questions during debriefing:
 
 1.  Demographics: Age (text box), Gender (select one: Male, Female, Other, Prefer not to say)
 2.  How are you listening to the audio from experiment? (select one: Headphones, Laptop Speakers, External Speakers, Earbuds, Other)
@@ -206,35 +206,29 @@ The primary analyses will be conducted using the following linear model:
 
 I will also examine the effect of audio quality on perceived intelligence using the same form of @eq-1, except the outcome variable $Y_i$ will be the intelligence rating. This test will attempt to replicate the original study's Experiment 5, although this result should be interpreted with caution due to low power (d = 0.20).
 
-Finally, to generate hypotheses for future directions, I will investigate (1) within-person correlations between hireability and intelligence judgements.
+Finally, I will report the correlation between hireability and intelligence ratings.
 
 All analyses will be conducted in R.
 
 ### Differences from Original Study
 
-Explicitly describe known differences in sample, setting, procedure, and analysis plan from original study. The goal, of course, is to minimize those differences, but differences will inevitably occur. Also, note whether such differences are anticipated to make a difference based on claims in the original article or subsequent published research on the conditions for obtaining the effect.
-
--   Instruction audio was clear in all conditions
--   Did not include transcription task (Exp 1), rely on self report of comprehensibility
--   Because the original study found that same effect across computer and human voices, I pooled across voice types to achieve greater power with the preregistered sample size
+The main difference from the original study will be the pooling of human and computer voice types. The original Experiment 1 included a transcription task to assess participants' understanding of the recorded statement. Due to resource constraints, this replication will instead rely on participants' self-reported level of understanding. The instructional sample audio in the original experiments also applied the audio manipulation (clear or distored) to match the experimental condition. For simplicity, this replication uses the same, clear sample audio for all conditions. These differences are not expected to influence the results or interpretations of this replication.
 
 ### Methods Addendum (Post Data Collection)
 
-You can comment this section out prior to final report with data collection.
-
 #### Actual Sample
 
-Sample size, demographics, data exclusions based on rules spelled out in analysis plan
+*To completed post-data collection.*
 
 #### Differences from pre-data collection methods plan
 
-Any differences from what was described as the original plan, or “none”.
+*To completed post-data collection.*
 
 ## Results
 
 ### Data preparation
 
-This code anonomyzes the data file and removes participants according to the exclusion critera used in the original study: self-reported attention \< 70/100, technical difficulties or distractions, response times \> \$\pm\$2.5 SD than the mean, and comprehension scores \$\pm\$2 SD from the mean.
+This code anonomyzes the data file and removes participants from the analysis according to the exclusion criteria used in the original study: self-reported attention < 70/100, response times $\pm$ 2.5 SD than the mean, and comprehension scores $\pm$ 2 SD from the mean. Data from participants who self-report technical difficulties or distractions will be excluded only if I deem these challenges severe enough to interfere with their ability to complete the task. 
 
 ```{r data prep}
 #### Import data
@@ -263,7 +257,6 @@ pilot_B = pilot_B %>%
   filter(remove_outliers(hire_rt, threshold = 2.5)) %>% 
   filter(remove_outliers(intelligence_rt, threshold = 2.5)) %>% 
   filter(remove_outliers(debrief_understandable, threshold = 2))
-# technical difficulties? make this question yes/no, TRUE/FALSE
 
 #### Prepare data for analysis - create columns etc.
 pilot_B = pilot_B %>%
@@ -275,6 +268,8 @@ pilot_B = pilot_B %>%
 ```
 
 ### Confirmatory analysis
+
+The figure below shows the results from the original experiments by @walter-terrillSuperficialAuditoryDisfluency2025. The figures and analysis from my replication follow.
 
 ![Figure from the original study to reproduce (in part)](_shared/pnas_fig1.jpg)
 
@@ -324,7 +319,7 @@ cohens_d(debrief_understandable ~ audio_quality,
                            data = pilot_B)
 ```
 
-### Exploratory analyses {#sec-exploratory}
+### Exploratory analyses
 
 ```{r, message = FALSE, warning = FALSE}
 # plot interaction voice type x audio quality
@@ -384,10 +379,11 @@ ggplot(data = pilot_B,
 
 ```{r}
 # build linear model for intelligence
-model_intel = lm(intelligence ~ audio_quality + voice_type + audio_quality*voice_type,
+model_intel = lm(intelligence ~ 1 + audio_quality + voice_type + audio_quality*voice_type,
            data = pilot_B)
 summary(model_intel)
 ```
+
 ```{r}
 # main effect of audio quality on intelligence
 emm <- emmeans(model_intel, ~ audio_quality)
@@ -396,7 +392,7 @@ eff_size(emm, sigma = sigma(model_intel), edf = df.residual(model_intel))
 ```
 
 ```{r}
-# within-person coupling: are hire and intelligence ratings correlated?
+# are hire and intelligence ratings correlated?
 cor_overall <- cor.test(pilot_B$hire, pilot_B$intelligence, 
                         method = "pearson")
 r_value <- cor_overall$estimate
@@ -406,25 +402,34 @@ ci_upper <- cor_overall$conf.int[2]
 
 ggplot(pilot_B, aes(x = hire, y = intelligence)) +
   geom_point(alpha = 0.4) +
-  geom_smooth(method = "lm", color = "blue", fill = "lightblue") +
+  geom_smooth(method = "lm", alpha = 0.1, fill = "lightblue") +
   labs(
-    title = "Hireability and Intelligence Ratings",
+    title = "Hireability-Intelligence Correlation",
     subtitle = sprintf("r = %.2f, p = %.3f", r_value, p_value),
     x = "Hireability Rating",
     y = "Intelligence Rating"
   ) +
-  theme_minimal()
+    scale_y_continuous(breaks = seq(from = 0,
+                                  to = 100,
+                                  by = 10)) +
+  scale_x_continuous(breaks = seq(from = 0,
+                                  to = 100,
+                                  by = 10)) +
+  scale_color_brewer(palette = "Set1") +
+  theme_classic() +
+  theme(text = element_text(size = 13)) +
+  theme(plot.title = element_text(hjust = 0.5))
 ```
 
 ## Discussion
 
 ### Summary of Replication Attempt
 
-Open the discussion section with a paragraph summarizing the primary result from the confirmatory analysis and the assessment of whether it replicated, partially replicated, or failed to replicate the original result.
+*To completed post-data collection.*
 
 ### Commentary
 
-Add open-ended commentary (if any) reflecting (a) insights from follow-up exploratory analysis, (b) assessment of the meaning of the replication (or not) - e.g., for a failure to replicate, are the differences between original and present study ones that definitely, plausibly, or are unlikely to have been moderators of the result, and (c) discussion of any objections or challenges raised by the current and original authors about the replication attempt. None of these need to be long.
+*To completed post-data collection.*
 
 ### COI Disclosure
 
