@@ -120,8 +120,8 @@ Accordingly, I selected a total N of 250 to yield \>90% power and compared this 
 
 # compare power across experiments
 pwr_replication = pwr_replication %>% 
-  mutate(n_per_group = c(62, 62, 125, 125),
-         total_n = 250,
+  mutate(n_per_group = c(62, 62, 62, 125),
+         total_n = n_per_group * 2,
          power = map2_chr(n_per_group, effect_size, ~{
            paste0(round(pwr.t.test(n = .x,
                                    d = .y,
