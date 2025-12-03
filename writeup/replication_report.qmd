@@ -232,7 +232,7 @@ This code anonomyzes the data file and removes participants from the analysis ac
 
 ```{r data prep}
 #### Import data
-pilot_B <- read_csv(here("data", "pilot_B.csv")) %>%
+full_sample <- read_csv(here("data", "full_sample.csv")) %>%
   filter(data_summary == TRUE) %>% 
   # remove identifying information
   select(-rt, -subject, -prolific_study_id,
@@ -240,7 +240,7 @@ pilot_B <- read_csv(here("data", "pilot_B.csv")) %>%
   # create sequential subject ids
   mutate(id = seq(1:nrow(.))) %>% 
   # create anonymized data file
-  write_csv(., "../data/pilot_B-anon.csv")
+  write_csv(., "../data/full_sample-anon.csv")
 
 #### Data exclusion / filtering
 
@@ -252,14 +252,14 @@ remove_outliers <- function(x, threshold = 2.5) {
 }
 
 # exclusion
-pilot_B = pilot_B %>% 
+full_sample = full_sample %>% 
   filter(debrief_attention >= 70) %>% 
   filter(remove_outliers(hire_rt, threshold = 2.5)) %>% 
   filter(remove_outliers(intelligence_rt, threshold = 2.5)) %>% 
   filter(remove_outliers(debrief_understandable, threshold = 2))
 
 #### Prepare data for analysis - create columns etc.
-pilot_B = pilot_B %>%
+full_sample = full_sample %>%
   select(-c(key_press, stimulus, trial_type, trial_index)) %>%
   mutate(distorted_audio = as.factor(distorted_audio),
          audio_quality = fct_recode(distorted_audio,
@@ -275,16 +275,17 @@ The figure below shows the results from the original experiments by @walter-terr
 
 ```{r}
 # plot main effect of audio quality on hireability
-ggplot(data = pilot_B,
+ggplot(data = full_sample,
        mapping = aes(x = audio_quality,
                      y = hire,
                      color = audio_quality)) +
-  geom_beeswarm(cex = 10,
-                size = 2) +
+  geom_beeswarm(cex = 2.5,
+                size = 1,
+                alpha = 0.5) +
   stat_summary(fun = mean,
                geom = "crossbar",
                width = 0.5,
-               color = "grey") +
+               color = "black") +
   scale_color_brewer(palette = "Set1") +
   labs(title = "Hireability",
        x = "Simulated Audio Quality",
@@ -294,13 +295,14 @@ ggplot(data = pilot_B,
                                   by = 10)) +
   theme_classic() +
   theme(text = element_text(size = 13)) +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) +
+  theme(legend.position = "none")
 ```
 
 ```{r}
 # build linear model for hireability
 model_hire = lm(hire ~ 1 + audio_quality + voice_type + audio_quality*voice_type,
-           data = pilot_B)
+           data = full_sample)
 summary(model_hire)
 ```
 
@@ -312,18 +314,18 @@ eff_size(emm, sigma = sigma(model_hire), edf = df.residual(model_hire))
 
 # comprehension check
 t.test(debrief_understandable ~ audio_quality, 
-                             data = pilot_B,
+                             data = full_sample,
                              var.equal = FALSE)
 
 cohens_d(debrief_understandable ~ audio_quality, 
-                           data = pilot_B)
+                           data = full_sample)
 ```
 
 ### Exploratory analyses
 
 ```{r, message = FALSE, warning = FALSE}
 # plot interaction voice type x audio quality
-ggplot(data = pilot_B,
+ggplot(data = full_sample,
        mapping = aes(x = voice_type,
                      y = hire,
                      color = audio_quality,
@@ -355,16 +357,17 @@ eta_squared(model_hire, partial = TRUE)
 
 ```{r}
 # plot main effect of audio quality on intelligence (Exp. 5)
-ggplot(data = pilot_B,
+ggplot(data = full_sample,
        mapping = aes(x = audio_quality,
                      y = intelligence,
                      color = audio_quality)) +
-  geom_beeswarm(cex = 10,
-                size = 2) +
+  geom_beeswarm(cex = 3,
+                size = 1,
+                alpha = 0.5) +
   stat_summary(fun = mean,
                geom = "crossbar",
                width = 0.5,
-               color = "grey") +
+               color = "black") +
   scale_color_brewer(palette = "Set1") +
   labs(title = "Intelligence",
        x = "Simulated Audio Quality",
@@ -380,7 +383,7 @@ ggplot(data = pilot_B,
 ```{r}
 # build linear model for intelligence
 model_intel = lm(intelligence ~ 1 + audio_quality + voice_type + audio_quality*voice_type,
-           data = pilot_B)
+           data = full_sample)
 summary(model_intel)
 ```
 
@@ -393,16 +396,16 @@ eff_size(emm, sigma = sigma(model_intel), edf = df.residual(model_intel))
 
 ```{r}
 # are hire and intelligence ratings correlated?
-cor_overall <- cor.test(pilot_B$hire, pilot_B$intelligence, 
+cor_overall <- cor.test(full_sample$hire, full_sample$intelligence, 
                         method = "pearson")
 r_value <- cor_overall$estimate
 p_value <- cor_overall$p.value
 ci_lower <- cor_overall$conf.int[1]
 ci_upper <- cor_overall$conf.int[2]
 
-ggplot(pilot_B, aes(x = hire, y = intelligence)) +
+ggplot(full_sample, aes(x = hire, y = intelligence)) +
   geom_point(alpha = 0.4) +
-  geom_smooth(method = "lm", alpha = 0.1, fill = "lightblue") +
+  geom_smooth(method = "lm", alpha = 1, fill = "lightblue") +
   labs(
     title = "Hireability-Intelligence Correlation",
     subtitle = sprintf("r = %.2f, p = %.3f", r_value, p_value),
