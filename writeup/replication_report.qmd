@@ -310,6 +310,7 @@ summary(model_hire)
 # main effect of audio quality on hireability
 emm <- emmeans(model_hire, ~ audio_quality)
 pairs(emm)
+pairs(emmeans(model_hire, ~ audio_quality), infer = TRUE)
 eff_size(emm, sigma = sigma(model_hire), edf = df.residual(model_hire))
 
 # comprehension check
@@ -389,7 +390,7 @@ summary(model_intel)
 
 ```{r}
 # main effect of audio quality on intelligence
-emm <- emmeans(model_intel, ~ audio_quality)
+emm <- emmeans(model_intel, ~ audio_quality) # name this intel
 pairs(emm)
 eff_size(emm, sigma = sigma(model_intel), edf = df.residual(model_intel))
 ```

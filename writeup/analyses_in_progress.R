@@ -1,3 +1,14 @@
+# Audio quality M and SD
+full_sample %>%
+  group_by(audio_quality) %>%
+  summarise(
+    n = n(),
+    M = mean(hire, na.rm = TRUE),
+    SD = sd(hire, na.rm = TRUE)
+  )
+
+
+
 # Voice type main effect
 emm_voice <- emmeans(model_hire, ~ voice_type)
 pairs(emm_voice)
