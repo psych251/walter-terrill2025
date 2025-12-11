@@ -23,7 +23,7 @@ csl: apa.csl
 ## Audio
 
 |   | Human | Computer |
-|------------------------|:-------------------------|---------------------:|
+|----|:---|---:|
 | Clear | <audio controls> <source src="https://raw.githubusercontent.com/psych251/walter-terrill2025/main/experiment/audio/human_sm_undistorted.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> | <audio controls> <source src="https://raw.githubusercontent.com/psych251/walter-terrill2025/main/experiment/audio/human_sm_distort4.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> |
 | Distorted | <audio controls> <source src="https://raw.githubusercontent.com/psych251/walter-terrill2025/main/experiment/audio/matthew_sales_short.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> | <audio controls> <source src="https://raw.githubusercontent.com/psych251/walter-terrill2025/main/experiment/audio/matthew_sales_short_distort4.mp3" type="audio/mpeg"> Your browser does not support the audio element. </audio> |
 

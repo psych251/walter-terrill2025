@@ -13,23 +13,24 @@ format:
 
 ```{r load libraries, include = FALSE}
 library("pwr")           # for power analyses
-library("tidyverse")     # for data wrangling
 library("knitr")         # for knitting RMarkdown
 library("here")          # for managing file paths
 library("ggbeeswarm")    # for beeswarm plots
-library("effectsize")
-library("emmeans")
+library("effectsize")    # for calculating effect sizes
+library("emmeans")       # for calculating main effects
+library("janitor")       # for tidying outputs
+library("tidyverse")     # for data wrangling
 ```
 
 <!-- Replication reports should all use this template to standardize reporting across projects.  These reports will be public supplementary materials that accompany the summary report(s) of the aggregate results. -->
 
 ## Introduction
 
-Human interpersonal communication is increasingly mediated by videoconferencing technology. While platforms like Zoom allow users to see themselves, they are not typically able to hear how they sound to others. @walter-terrillSuperficialAuditoryDisfluency2025 found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical support for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself. Practically, microphone quality represents a relatively simple target for intervention that could increase a family's socioeconomic status if it is indeed critical in hiring decisions. The increasingly popularity of podcasts as news sources could also affect how listeners judge the quality of information presented, regardless of the content.
+Human interpersonal communication is increasingly mediated by videoconferencing technology. While platforms like Zoom allow users to see themselves, they are not typically able to hear how they sound to others. @walter-terrillSuperficialAuditoryDisfluency2025 found that participants rated a job candidate more favorably when the audio quality of their application statement was clear vs. distorted but otherwise comprehensible. This finding provides empirical support for the influential communication theory media ecology, which suggests characteristics of the medium through which a message is delivered may affect people independently of the content of the message itself [@griffinMediaEcologyMarshall2019]. Practically, microphone quality represents a relatively simple target for intervention that could increase a family's socioeconomic status if it is indeed critical in hiring decisions. The increasingly popularity of podcasts as news sources could also affect how listeners judge the quality of information presented, regardless of the content.
 
 The target of this replication is Experiment 4, in which 1200 participants from the Prolific platform were randomly assigned to the clear or distorted audio conditions (600 in each group). After listening to the audio statement, participants rated how likely they would be to hire the candidate on a continuous scale from 0 to 100. I will additionally conduct several exploratory analyses with the goal of generating hypotheses to test in future work.
 
-All materials and details needed to conduct this replication can be found in the [repository](https://github.com/psych251/walter-terrill2025) and in the [original paper](https://github.com/psych251/walter-terrill2025/blob/main/original_paper/walter-terrill-et-al-2025.pdf).
+All materials and details needed to conduct this replication can be found in the [repository](https://github.com/psych251/walter-terrill2025){target="_blank"} and in the [original paper](https://github.com/psych251/walter-terrill2025/blob/main/original_paper/walter-terrill-et-al-2025.pdf){target="_blank"}.
 
 ## Methods
 
@@ -200,7 +201,7 @@ The primary analyses will be conducted using the following linear model:
 
 {{< include _shared/eq-linear-model.qmd >}}
 
-**Confirmatory analysis:** To replicate the finding from the original study's Experiment 4, I will test the effect of audio quality on hireability using estimated marginal means. This approach is equivalent to the "between-samples two-tailed t test" used by [@walter-terrillSuperficialAuditoryDisfluency2025]. Additionally, I will rule out the potential confound of comprehension using an independent samples t-test.
+**Confirmatory analysis:** To replicate the finding from the original study's Experiment 4, I will test the effect of audio quality on hireability using estimated marginal means [@lenthEmmeansEstimatedMarginal2025]. This approach is equivalent to the "between-samples two-tailed t test" used by [@walter-terrillSuperficialAuditoryDisfluency2025]. Additionally, I will rule out the potential confound of comprehension using an independent samples t-test.
 
 **Exploratory analyses:** I will use the interaction term in @eq-1 to test the potential effect of voice type on hireability, which was not directly tested in the original study. A non-significant interaction will support the generalizbility of the audio quality effect and, thus, the pooling strategy.
 
@@ -208,7 +209,7 @@ I will also examine the effect of audio quality on perceived intelligence using 
 
 Finally, I will report the correlation between hireability and intelligence ratings.
 
-All analyses will be conducted in R.
+All analyses will be conducted in R [@rcoreteamLanguageEnvironmentStatistical2025].
 
 ### Differences from Original Study
 
@@ -218,19 +219,50 @@ The main difference from the original study will be the pooling of human and com
 
 #### Actual Sample
 
-*To completed post-data collection.*
+```{r message = FALSE, warning = FALSE}
+
+# describe sample characteristics 
+
+full_sample <- read_csv(here("data", "full_sample.csv")) %>%
+  filter(data_summary == TRUE)
+
+mean_age <- mean(full_sample$debrief_age)
+sd_age <- sd(full_sample$debrief_age)
+
+percent_female <- full_sample %>% 
+  group_by(debrief_gender) %>% 
+  summarize(n = n()) %>% 
+  filter(debrief_gender == "female") %>%
+  pull()/nrow(full_sample)*100
+```
+
+A total of `{r} nrow(full_sample)` participants ($\text M_{age}$ = `{r} round(mean_age, digits = 2)`, $\text {SD}_{age}$ = `{r} round(sd_age, digits = 2)`, `{r} round(percent_female)`% female) completed the study on Prolific. @tbl-condition_assignment shows the number of participants randomly assigned to each condition.
+
+```{r}
+#| label: tbl-condition_assignment
+#| tbl-cap: "Randomized Condition Assignment"
+#| 
+full_sample %>%
+  group_by(voice_type, distorted_audio) %>%
+  summarize(n = n(), .groups = "drop") %>%
+  pivot_wider(names_from = distorted_audio, values_from = n) %>%
+  adorn_totals(c("row", "col")) %>% 
+  kable(col.names = c("Voice Type", "Clear",
+                      "Distorted", "Total"))
+```
+
 
 #### Differences from pre-data collection methods plan
 
-*To completed post-data collection.*
+Data collection followed the preregistered methods. Data for two participants was missing from Prolific.
 
 ## Results
 
 ### Data preparation
 
-This code anonomyzes the data file and removes participants from the analysis according to the exclusion criteria used in the original study: self-reported attention < 70/100, response times $\pm$ 2.5 SD than the mean, and comprehension scores $\pm$ 2 SD from the mean. Data from participants who self-report technical difficulties or distractions will be excluded only if I deem these challenges severe enough to interfere with their ability to complete the task. 
+This code anonomyzes the data file and removes participants from the analysis according to the exclusion criteria used in the original study: self-reported attention < 70/100, response times $\pm2.5$ SD than the mean, and comprehension scores $\pm2$ SD from the mean. Data from participants who self-report technical difficulties or distractions will be excluded only if I deem these challenges severe enough to interfere with their ability to complete the task. 
 
-```{r data prep}
+```{r data prep, message = FALSE, warning = FALSE}
 #### Import data
 full_sample <- read_csv(here("data", "full_sample.csv")) %>%
   filter(data_summary == TRUE) %>% 
@@ -241,7 +273,9 @@ full_sample <- read_csv(here("data", "full_sample.csv")) %>%
   mutate(id = seq(1:nrow(.))) %>% 
   # create anonymized data file
   write_csv(., "../data/full_sample-anon.csv")
+```
 
+```{r exclusions}
 #### Data exclusion / filtering
 
 # define function to calculate distance from the mean
@@ -251,13 +285,40 @@ remove_outliers <- function(x, threshold = 2.5) {
   abs(x - mean_x) <= threshold * sd_x
 }
 
-# exclusion
-full_sample = full_sample %>% 
-  filter(debrief_attention >= 70) %>% 
-  filter(remove_outliers(hire_rt, threshold = 2.5)) %>% 
-  filter(remove_outliers(intelligence_rt, threshold = 2.5)) %>% 
-  filter(remove_outliers(debrief_understandable, threshold = 2))
+# define original sample size
+n_original <- nrow(full_sample)
 
+# attention check
+n_before <- nrow(full_sample)
+full_sample <- full_sample %>% 
+  filter(debrief_attention >= 70)
+n_attention <- n_before - nrow(full_sample)
+
+# hire response time
+n_before <- nrow(full_sample)
+full_sample <- full_sample %>% 
+  filter(remove_outliers(hire_rt, threshold = 2.5))
+n_hire_rt <- n_before - nrow(full_sample)
+
+# intelligence response time
+n_before <- nrow(full_sample)
+full_sample <- full_sample %>% 
+  filter(remove_outliers(intelligence_rt, threshold = 2.5))
+n_intelligence_rt <- n_before - nrow(full_sample)
+
+# comprehension check
+n_before <- nrow(full_sample)
+full_sample <- full_sample %>% 
+  filter(remove_outliers(debrief_understandable, threshold = 2))
+n_understandable <- n_before - nrow(full_sample)
+
+# total exclusions
+n_excluded <- n_original - nrow(full_sample)
+```
+
+A total of `{r} n_excluded` participants were excluded from the analysis for the following reasons (defined above) in the following order: low attention (n = `{r} n_attention`), hireability rating response time (n = `{r} n_hire_rt`), intelligence rating response time (n = `{r} n_intelligence_rt`), and comprehension issues (n = `{r} n_understandable`). No participants were excluded for technical difficulties or distractions.
+
+```{r}
 #### Prepare data for analysis - create columns etc.
 full_sample = full_sample %>%
   select(-c(key_press, stimulus, trial_type, trial_index)) %>%
@@ -272,6 +333,8 @@ full_sample = full_sample %>%
 The figure below shows the results from the original experiments by @walter-terrillSuperficialAuditoryDisfluency2025. The figures and analysis from my replication follow.
 
 ![Figure from the original study to reproduce (in part)](_shared/pnas_fig1.jpg)
+
+#### No effect of audio quality on hireability
 
 ```{r}
 # plot main effect of audio quality on hireability
@@ -299,30 +362,127 @@ ggplot(data = full_sample,
   theme(legend.position = "none")
 ```
 
-```{r}
-# build linear model for hireability
-model_hire = lm(hire ~ 1 + audio_quality + voice_type + audio_quality*voice_type,
-           data = full_sample)
-summary(model_hire)
+```{r, results = 'hide', message = FALSE}
+# linear model for hireability
+model_hire = lm(hire ~ 1 + audio_quality + voice_type +
+                  audio_quality*voice_type, data = full_sample)
+
+# get descriptive statistics
+full_sample_descriptives = full_sample %>%
+  group_by(audio_quality) %>%
+  summarise(
+    n = n(),
+    M_hire = mean(hire, na.rm = TRUE),
+    SD_hire = sd(hire, na.rm = TRUE))
+
+# save means and standard deviations
+mean_hire_clear <- full_sample_descriptives %>% 
+  filter(audio_quality == "Clear") %>% 
+  select(M_hire) %>% 
+  pull()
+
+sd_hire_clear <- full_sample_descriptives %>% 
+  filter(audio_quality == "Clear") %>% 
+  select(SD_hire) %>% 
+  pull()
+
+mean_hire_distorted <- full_sample_descriptives %>% 
+  filter(audio_quality == "Distorted") %>% 
+  select(M_hire) %>% 
+  pull()
+
+sd_hire_distorted <- full_sample_descriptives %>% 
+  filter(audio_quality == "Distorted") %>% 
+  select(SD_hire) %>% 
+  pull()
+
+# main effect of audio quality on hireability
+emm_hire <- pairs(emmeans(model_hire, ~ audio_quality), infer = TRUE)
+
+# save inferential statistic values
+df_hire <- summary(emm_hire)$df
+t_hire <- round(summary(emm_hire)$t.ratio, digits = 2)
+ci_lower_hire <- round(summary(emm_hire)$lower.CL, digits = 2)
+ci_upper_hire <- round(summary(emm_hire)$upper.CL, digits = 2)
+p_hire <- round(summary(emm_hire)$p.value, digits = 3)
+
+# effect size
+emm_hire_means <- emmeans(model_hire, ~ audio_quality)
+eff_size_hire <- eff_size(emm_hire_means, sigma = sigma(model_hire), edf = df.residual(model_hire))
+eff_size_hire <- round(summary(eff_size_hire)$effect.size, digits = 2)
 ```
 
-```{r}
-# main effect of audio quality on hireability
-emm <- emmeans(model_hire, ~ audio_quality)
-pairs(emm)
-pairs(emmeans(model_hire, ~ audio_quality), infer = TRUE)
-eff_size(emm, sigma = sigma(model_hire), edf = df.residual(model_hire))
+There was no significant difference in hireability ratings between participants who heard the distorted (M = `{r} round(mean_hire_distorted, digits = 2)`, SD = `{r} round(sd_hire_distorted, digits = 2)`) vs. clear (M = `{r} round(mean_hire_clear, digits = 2)`, SD = `{r} round(sd_hire_clear, digits = 2)`) recording (*t*(`{r} df_hire`) = `{r} t_hire`, 95% CI [`{r} ci_lower_hire`, `{r} ci_upper_hire`], *p* = `{r} p_hire`, *d* = `{r} eff_size_hire`)
 
+```{r, results = 'hide'}
 # comprehension check
-t.test(debrief_understandable ~ audio_quality, 
+comprehension_check = t.test(debrief_understandable ~ audio_quality, 
                              data = full_sample,
                              var.equal = FALSE)
 
-cohens_d(debrief_understandable ~ audio_quality, 
-                           data = full_sample)
+format_pvalue <- function(p) {
+  case_when(
+    p < 0.001 ~ "< .001",
+    p < 0.01 ~ "< .01",
+    p < 0.05 ~ "< .05",
+    p >= 0.05 ~ as.character(round(p, digits = 3))
+  )
+}
+
+# save inferential statistic values
+df_understandable <- round(comprehension_check$parameter, digits = 2)
+t_understandable <- round(comprehension_check$statistic, digits = 2)
+ci_lower_understandable <- round(comprehension_check$conf.int[1],
+                                 digits = 2)
+ci_upper_understandable <- round(comprehension_check$conf.int[2],
+                                 digits = 2)
+p_understandable <- format_pvalue(comprehension_check$p.value) 
+eff_size_understandable <- round(cohens_d(debrief_understandable
+                                          ~ audio_quality,
+                                          data = full_sample)$Cohens_d,
+                                 digits = 2)
+
+# get descriptive statistics for comprehension check
+full_sample_descriptives = full_sample_descriptives %>%
+  bind_cols(full_sample %>%
+  group_by(audio_quality) %>%
+  summarise(M_understand = mean(debrief_understandable,
+                                 na.rm = TRUE),
+            SD_understand = sd(debrief_understandable,
+                               na.rm = TRUE)) %>% 
+  select(-audio_quality))
+
+# save values
+mean_understand_distorted <- full_sample_descriptives %>% 
+  filter(audio_quality == "Distorted") %>% 
+  select(M_understand) %>%
+  pull() %>% 
+  round(digits = 2)
+  
+sd_understand_distorted <- full_sample_descriptives %>% 
+  filter(audio_quality == "Distorted") %>% 
+  select(SD_understand) %>%
+  pull() %>% 
+  round(digits = 2)
+
+mean_understand_clear <- full_sample_descriptives %>% 
+  filter(audio_quality == "Clear") %>% 
+  select(M_understand) %>%
+  pull() %>% 
+  round(digits = 2)
+
+sd_understand_clear <- full_sample_descriptives %>% 
+  filter(audio_quality == "Clear") %>% 
+  select(SD_understand) %>%
+  pull() %>% 
+  round(digits = 2)
 ```
 
+However, participants reported significantly lower comprehension of the statement when the audio was distorted (M = `{r} mean_understand_distorted`, SD = `{r} sd_understand_distorted`) vs. clear (M = `{r} mean_understand_clear`, SD = `{r} sd_understand_clear`) (*t*(`{r} df_understandable`) = `{r} t_understandable`, 95% CI [`{r} ci_lower_understandable`, `{r} ci_upper_understandable`], *p* `{r} p_understandable`, *d* = `{r} eff_size_understandable`).
+
 ### Exploratory analyses
+
+#### Null effect of audio quality holds across voice type
 
 ```{r, message = FALSE, warning = FALSE}
 # plot interaction voice type x audio quality
@@ -355,6 +515,10 @@ ggplot(data = full_sample,
 anova(model_hire)
 eta_squared(model_hire, partial = TRUE)
 ```
+
+The interaction between audio quality and voice type was NOT significant; the null effect held across both voice types (F(1, 213) = 0.08, p = 0.78, η²p < .001).
+
+Human voices (M = 74.1, SD = 16.6) were rated much more hireable than computer voices (M = 59.2, SD = 28.7) (t(213) = -3.92, p < .001, d = 0.66).
 
 ```{r}
 # plot main effect of audio quality on intelligence (Exp. 5)
@@ -443,3 +607,11 @@ In the interest of transparency, I disclose that I occasionally work as an indep
 
 ::: {#refs}
 :::
+
+## Session Info
+
+This document was written and compiled in RStudio.
+
+```{r, echo = FALSE}
+sessionInfo()
+```
