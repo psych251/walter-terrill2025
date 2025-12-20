@@ -30,7 +30,7 @@ Human interpersonal communication is increasingly mediated by videoconferencing 
 
 The target of this replication is Experiment 4, in which 1200 participants from the Prolific platform were randomly assigned to the clear or distorted audio conditions (600 in each group). After listening to the audio statement, participants rated how likely they would be to hire the candidate on a continuous scale from 0 to 100. I will additionally conduct several exploratory analyses with the goal of generating hypotheses to test in future work.
 
-All materials and details needed to conduct this replication can be found in the [repository](https://github.com/psych251/walter-terrill2025){target="_blank"} and in the [original paper](https://github.com/psych251/walter-terrill2025/blob/main/original_paper/walter-terrill-et-al-2025.pdf){target="_blank"}.
+All materials and details needed to conduct this replication can be found in the [repository](https://github.com/psych251/walter-terrill2025){target="_blank"} and in the [original paper](https://github.com/psych251/walter-terrill2025/blob/main/original_paper/walter-terrill-et-al-2025.pdf){target="_blank"}. The experiment was pregistered with the Open Science Framework on December 2, 2025 prior to data collection: [10.17605/OSF.IO/N9DR2](https://osf.io/n9dr2/overview ){target="_blank"}
 
 ## Methods
 
@@ -512,13 +512,53 @@ ggplot(data = full_sample,
 ```
 
 ```{r}
-anova(model_hire)
-eta_squared(model_hire, partial = TRUE)
+# get inferential statistics for interaction term
+t_hire_interaction <- summary(model_hire)$coefficients[4,3]
+f_hire_interaction <- round(t_hire_interaction^2, digits = 2)
+p_hire_interaction <- round(summary(model_hire)$coefficients[4,4],
+                            digits = 2)
+eff_size_hire_interaction <- format_pvalue(eta_squared(model_hire,
+                                                       partial = TRUE)[3,2])
 ```
 
-The interaction between audio quality and voice type was NOT significant; the null effect held across both voice types (F(1, 213) = 0.08, p = 0.78, η²p < .001).
+There was no significant interaction between audio quality and voice type; the null effect of audio quality held across both human and computer voices (*F*(1, `{r} model_hire$df`) = `{r} f_hire_interaction`, *p* = `{r} p_hire_interaction`, *η²p* `{r} eff_size_hire_interaction`).
 
-Human voices (M = 74.1, SD = 16.6) were rated much more hireable than computer voices (M = 59.2, SD = 28.7) (t(213) = -3.92, p < .001, d = 0.66).
+```{r}
+# get descriptives for hireability by voice type
+mean_hire_human <- full_sample %>% 
+  filter(voice_type == "human") %>%
+  summarise(M_hire = mean(hire)) %>% 
+  pull() %>% 
+  round(digits = 2)
+
+sd_hire_human <- full_sample %>% 
+  filter(voice_type == "human") %>%
+  summarise(SD_hire = sd(hire)) %>% 
+  pull() %>% 
+  round(digits = 2)
+
+mean_hire_computer <- full_sample %>% 
+  filter(voice_type == "computer") %>%
+  summarise(M_hire = mean(hire)) %>% 
+  pull() %>% 
+  round(digits = 2)
+
+sd_hire_computer <- full_sample %>% 
+  filter(voice_type == "computer") %>%
+  summarise(M_hire = sd(hire)) %>% 
+  pull() %>% 
+  round(digits = 2)
+
+# inferential statistics
+eff_size_voice_type <- cohens_d(hire ~ voice_type, data = full_sample)
+eff_size_voice_type <- round(abs(eff_size_voice_type$Cohens_d), digits = 2)
+t_voice_type <- round(summary(model_hire)$coefficients[3,3],
+                      digits = 2)
+p_voice_type <- round(summary(model_hire)$coefficients[3,4],
+                      digits = 3)
+```
+
+However, there was a strong preference for human voices; participants rated human voices (M = `{r} mean_hire_human`, SD = `{r} sd_hire_human`) more hireable than computer voices (M = `{r} mean_hire_computer`, SD = `{r} sd_hire_computer`) (*t*(`{r} model_hire$df`) = `{r} t_voice_type`, *p* = `{r} p_voice_type`, *d* = `{r} eff_size_voice_type`).
 
 ```{r}
 # plot main effect of audio quality on intelligence (Exp. 5)
@@ -545,38 +585,72 @@ ggplot(data = full_sample,
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-```{r}
-# build linear model for intelligence
-model_intel = lm(intelligence ~ 1 + audio_quality + voice_type + audio_quality*voice_type,
-           data = full_sample)
-summary(model_intel)
-```
+```{r, results = 'hide', message = FALSE}
+# linear model for intelligence
+model_intel = lm(intelligence ~ 1 + audio_quality + voice_type + audio_quality*voice_type, data = full_sample)
 
-```{r}
+# add descriptives
+full_sample_descriptives = full_sample_descriptives %>%
+  bind_cols(full_sample %>%
+  group_by(audio_quality) %>%
+  summarise(M_intel = mean(intelligence, na.rm = TRUE),
+            SD_intel = sd(intelligence, na.rm = TRUE)) %>% 
+  select(-audio_quality))
+
+# save values
+mean_intel_clear <- full_sample_descriptives %>% 
+  filter(audio_quality == "Clear") %>% 
+  select(M_intel) %>% 
+  pull() %>% 
+  round(digits = 2)
+
+sd_intel_clear<- full_sample_descriptives %>% 
+  filter(audio_quality == "Clear") %>% 
+  select(SD_intel) %>% 
+  pull() %>% 
+  round(digits = 2)
+
+mean_intel_distorted <- full_sample_descriptives %>% 
+  filter(audio_quality == "Distorted") %>% 
+  select(M_intel) %>% 
+  pull() %>% 
+  round(digits = 2)
+
+sd_intel_distorted <- full_sample_descriptives %>% 
+  filter(audio_quality == "Distorted") %>% 
+  select(SD_intel) %>% 
+  pull() %>% 
+  round(digits = 2)
+
 # main effect of audio quality on intelligence
-emm <- emmeans(model_intel, ~ audio_quality) # name this intel
-pairs(emm)
-eff_size(emm, sigma = sigma(model_intel), edf = df.residual(model_intel))
+emm_intel <- pairs(emmeans(model_hire, ~ audio_quality), infer = TRUE)
+
+# save inferential statistics
+df_intel <- summary(emm_intel)$df
+t_intel <- round(summary(emm_intel)$t.ratio, digits = 2)
+ci_lower_intel <- round(summary(emm_intel)$lower.CL, digits = 2)
+ci_upper_intel <- round(summary(emm_intel)$upper.CL, digits = 2)
+p_intel <- round(summary(emm_intel)$p.value, digits = 3)
+
+# effect size
+emm_intel_means <- emmeans(model_intel, ~ audio_quality)
+eff_size_intel <- eff_size(emm_intel_means, sigma = sigma(model_intel), edf = df.residual(model_intel))
+eff_size_intel <- round(summary(eff_size_intel)$effect.size, digits = 2)
 ```
 
-```{r}
-# are hire and intelligence ratings correlated?
-cor_overall <- cor.test(full_sample$hire, full_sample$intelligence, 
-                        method = "pearson")
-r_value <- cor_overall$estimate
-p_value <- cor_overall$p.value
-ci_lower <- cor_overall$conf.int[1]
-ci_upper <- cor_overall$conf.int[2]
+There was no significant difference in intelligence ratings between participants who heard the distorted (M = `{r} mean_intel_distorted`, SD = `{r} sd_intel_distorted`) vs. clear (M = `{r} mean_intel_clear`, SD = `{r} sd_intel_clear`) recording (*t*(`{r} df_intel`) = `{r} t_intel`, 95% CI [`{r} ci_lower_intel`, `{r} ci_upper_intel`], *p* = `{r} p_intel`, *d* = `{r} eff_size_intel`)
 
-ggplot(full_sample, aes(x = hire, y = intelligence)) +
+```{r, message = FALSE}
+# plot hire-intel correlation
+ggplot(data = full_sample,
+       mapping = aes(x = hire, y = intelligence)) +
   geom_point(alpha = 0.4) +
-  geom_smooth(method = "lm", alpha = 1, fill = "lightblue") +
-  labs(
-    title = "Hireability-Intelligence Correlation",
-    subtitle = sprintf("r = %.2f, p = %.3f", r_value, p_value),
-    x = "Hireability Rating",
-    y = "Intelligence Rating"
-  ) +
+  geom_smooth(method = "lm",
+              alpha = 1,
+              fill = "lightblue") +
+  labs(title = "Hireability-Intelligence Correlation",
+       x = "Hireability Rating",
+       y = "Intelligence Rating") +
     scale_y_continuous(breaks = seq(from = 0,
                                   to = 100,
                                   by = 10)) +
@@ -587,17 +661,33 @@ ggplot(full_sample, aes(x = hire, y = intelligence)) +
   theme_classic() +
   theme(text = element_text(size = 13)) +
   theme(plot.title = element_text(hjust = 0.5))
+
+# correlation test
+cor_overall <- cor.test(full_sample$hire, full_sample$intelligence, 
+                        method = "pearson")
+r_corr <- round(cor_overall$estimate, digits = 2)
+p_corr <-  format_pvalue(cor_overall$p.value)
+ci_lower_corr <- round(cor_overall$conf.int[1], digits = 2)
+ci_upper_corr <- round(cor_overall$conf.int[2], digits = 2)
 ```
+
+There was a strong, positive correlation between hireability and intelligence ratings (*r* = `{r} r_corr`, 95% CI [`{r} ci_lower_corr`, `{r} ci_upper_corr`], *p* = `{r} p_corr`).
 
 ## Discussion
 
 ### Summary of Replication Attempt
 
-*To completed post-data collection.*
+This study failed to replicate the main effect of audio quality on hireability ratings from @walter-terrillSuperficialAuditoryDisfluency2025's Experiments 1 and 4 (*t*(`{r} df_hire`) = `{r} t_hire`, 95% CI [`{r} ci_lower_hire`, `{r} ci_upper_hire`], *p* = `{r} p_hire`, *d* = `{r} eff_size_hire`). The exploratory analysis similarly found no effect of audio quality on perceived intelligence (*d* = `{r} eff_size_intel`), failing to replicate Experiment 5 from the original study.
 
 ### Commentary
 
-*To completed post-data collection.*
+In this replication, participants who heard the distorted audio reported significantly lower comprehension than those in the clear condition (d = 0.63, p < .001), and 18 participants (7.3% of the original sample) were excluded based on comprehension scores more than 2 SD from the mean. This exclusion rate appears substantially higher than the original study. Re-running the analysis without excluding those participants would be an important next step.
+
+Several methodological differences could explain the null finding. This replication pooled across human and computer voices to achieve adequate statistical power, whereas the original Experiments 1 and 4 examined these voice types separately. While the exploratory analysis found no interaction between audio quality and voice type, the pooled design revealed a strong main effect of voice type (d = 0.65, p = 0.001) that was not emphasized in the original study. This pronounced preference for human voices may have been a more salient feature than audio quality in the pooled design, potentially reducing participants' sensitivity to the audio manipulation. Additionally, this replication used self-reported comprehension rather than the transcription task employed in original Experiment 1, and used clear (rather than condition-matched) instructional audio. Either difference could have altered how participants processed or interpreted the audio quality manipulation.
+
+Differences in participant characteristics in late 2025 compared to the original experiments, which were pre-registered in 2021, could also explain the discrepancy. Participants have likely developed extensive Zoom experience in the years since the COVID-19 pandemic that may have moderated the effect of audio quality on social judgments.
+
+The failure to replicate across across both human and computer voices in this adequately powered study suggests the original effect may be more context-dependent or smaller in magnitude than initiailly reported. However, definitive conclusions cannot be drawn without a direct replication that more closely matches all procedures from the original study.
 
 ### COI Disclosure
 
